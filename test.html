@@ -431,6 +431,51 @@ function ParanoiaGame() {
                 );
             }
 
+            // LOBBY - Show if in lobby state (check FIRST before setup forms)
+            if (gameState === 'lobby') {
+                return (
+                    <div className="flex flex-col min-h-screen px-6 pt-8 pb-8">
+                        <div className="mb-8">
+                            <h2 className="font-display text-3xl font-extrabold mb-2">Game Lobby</h2>
+                            {onlineRoomCode && (
+                                <div className="glass rounded-lg px-4 py-2 inline-flex items-center gap-2 text-sm text-cyan-400 border-zinc-800">
+                                    <span className="font-mono font-bold">{onlineRoomCode}</span>
+                                    <button onClick={() => navigator.clipboard.writeText(onlineRoomCode)} className="hover:text-cyan-300">
+                                        <Copy size={14} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex-1">
+                            <h3 className="text-zinc-400 text-xs uppercase tracking-widest font-semibold mb-4">Players ({players.length}/{maxPlayers})</h3>
+                            <div className="space-y-2">
+                                {players.map((p) => (
+                                    <div key={p.id} className="glass rounded-lg px-4 py-3 flex items-center justify-between border-zinc-800">
+                                        <span className="text-white font-medium">{p.name}</span>
+                                        {p.isHost && <span className="text-xs bg-violet-950 text-violet-300 px-2 py-1 rounded border border-violet-800 font-semibold">HOST</span>}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {isHost && (
+                            <button
+                                onClick={handleStartGameSession}
+                                disabled={players.length < 2}
+                                className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30 disabled:opacity-50"
+                                style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
+                            >
+                                <Zap size={16} /> Start Game
+                            </button>
+                        )}
+                        {!isHost && (
+                            <div className="text-center text-zinc-500 text-sm">Waiting for host to start...</div>
+                        )}
+                    </div>
+                );
+            }
+
             if (screen === 'setup') {
                 if (gameMode === 'local') {
                     return (
@@ -614,50 +659,6 @@ function ParanoiaGame() {
                         </div>
                     );
                 }
-            }
-
-            if (screen === 'setup' && gameState === 'lobby') {
-                return (
-                    <div className="flex flex-col min-h-screen px-6 pt-8 pb-8">
-                        <div className="mb-8">
-                            <h2 className="font-display text-3xl font-extrabold mb-2">Game Lobby</h2>
-                            {onlineRoomCode && (
-                                <div className="glass rounded-lg px-4 py-2 inline-flex items-center gap-2 text-sm text-cyan-400 border-zinc-800">
-                                    <span className="font-mono font-bold">{onlineRoomCode}</span>
-                                    <button onClick={() => navigator.clipboard.writeText(onlineRoomCode)} className="hover:text-cyan-300">
-                                        <Copy size={14} />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex-1">
-                            <h3 className="text-zinc-400 text-xs uppercase tracking-widest font-semibold mb-4">Players ({players.length}/{maxPlayers})</h3>
-                            <div className="space-y-2">
-                                {players.map((p) => (
-                                    <div key={p.id} className="glass rounded-lg px-4 py-3 flex items-center justify-between border-zinc-800">
-                                        <span className="text-white font-medium">{p.name}</span>
-                                        {p.isHost && <span className="text-xs bg-violet-950 text-violet-300 px-2 py-1 rounded border border-violet-800 font-semibold">HOST</span>}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {isHost && (
-                            <button
-                                onClick={handleStartGameSession}
-                                disabled={players.length < 2}
-                                className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30 disabled:opacity-50"
-                                style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
-                            >
-                                <Zap size={16} /> Start Game
-                            </button>
-                        )}
-                        {!isHost && (
-                            <div className="text-center text-zinc-500 text-sm">Waiting for host to start...</div>
-                        )}
-                    </div>
-                );
             }
 
             if (gameState === 'playing') {
