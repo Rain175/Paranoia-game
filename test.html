@@ -277,29 +277,47 @@
             ],
         };
 
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDBx9ooN1RNK1vsNyrNgC-4B-ePy9VIjfM",
-  authDomain: "paranoia-game-549b9.firebaseapp.com",
-  databaseURL: "https://paranoia-game-549b9-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "paranoia-game-549b9",
-  storageBucket: "paranoia-game-549b9.firebasestorage.app",
-  messagingSenderId: "426674405580",
-  appId: "1:426674405580:web:ac092ca343c83d572ec269",
-  measurementId: "G-YYDD8JJBJG"
-};
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDBx9ooN1RNK1vsNyrNgC-4B-ePy9VIjfM",
+            authDomain: "paranoia-game-549b9.firebaseapp.com",
+            projectId: "paranoia-game-549b9",
+            databaseURL: "https://paranoia-game-549b9-default-rtdb.europe-west1.firebasedatabase.app",
+            storageBucket: "paranoia-game-549b9.firebasestorage.app",
+            messagingSenderId: "426674405580",
+            appId: "1:426674405580:web:ac092ca343c83d572ec269",
+            measurementId: "G-YYDD8JJBJG"
+        };
 
         let firebaseInitialized = false;
         let db = null;
+        let firebaseError = null;
 
         function initializeFirebase() {
-            if (firebaseInitialized) return;
+            if (firebaseInitialized || firebaseError) return;
             try {
-                firebase.initializeApp(FIREBASE_CONFIG);
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(FIREBASE_CONFIG);
+                    console.log("✓ Firebase app initialized");
+                } else {
+                    console.log("✓ Firebase app already exists");
+                }
+                
                 db = firebase.database();
                 firebaseInitialized = true;
+                console.log("✓ Firebase Realtime Database connected");
+                
+                // Test connection
+                db.ref('.info/connected').on('value', (snap) => {
+                    if (snap.val() === true) {
+                        console.log("✓ Connected to Firebase database");
+                    } else {
+                        console.log("✗ Disconnected from Firebase database");
+                    }
+                });
             } catch (e) {
-                console.warn("Firebase init failed - using local mode:", e.message);
+                firebaseError = e.message;
+                console.error("✗ Firebase init failed:", e.message);
+                db = null;
             }
         }
 
@@ -348,8 +366,8 @@ const firebaseConfig = {
                 if (!isOnline || !onlineRoomCode) return;
 
                 if (!db) {
-                    console.error("Firebase not initialized");
-                    setSyncError("Connection failed. Using local mode.");
+                    console.warn("Firebase not ready for sync");
+                    setSyncError("Firebase not connected");
                     return;
                 }
 
@@ -357,10 +375,11 @@ const firebaseConfig = {
                 roomRefRef.current = roomRef;
 
                 // Listen to room changes
-                const unsubscribe = roomRef.on('value', (snapshot) => {
+                const onValue = (snapshot) => {
                     const roomData = snapshot.val();
                     if (roomData && roomData.players) {
-                        setPlayers(Object.values(roomData.players));
+                        const playerList = Object.values(roomData.players).filter(p => p !== null);
+                        setPlayers(playerList);
                         if (roomData.gameState) {
                             setGameState(roomData.gameState);
                             setCurrentPlayerIdx(roomData.currentPlayerIdx || 0);
@@ -369,13 +388,17 @@ const firebaseConfig = {
                             setCoinFlipping(roomData.coinFlipping || false);
                         }
                     }
-                }, (error) => {
-                    console.warn("Firebase sync error:", error.message);
-                    setSyncError("Sync paused - check connection");
-                });
+                };
+
+                const onError = (error) => {
+                    console.error("Firebase sync error:", error.code, error.message);
+                    setSyncError(`Sync error: ${error.message}`);
+                };
+
+                roomRef.on('value', onValue, onError);
 
                 return () => {
-                    roomRef.off('value', unsubscribe);
+                    roomRef.off('value', onValue);
                 };
             }, [isOnline, onlineRoomCode]);
 
@@ -432,48 +455,36 @@ const firebaseConfig = {
 
             const handleCreateOnlineGame = () => {
                 if (!playerName.trim()) return;
+                
+                if (!db) {
+                    alert("Firebase not connected.\n\n1. Check your internet connection\n2. Refresh the page\n3. Check browser console (F12) for errors\n\nIf still failing, you can play in local mode instead.");
+                    return;
+                }
+
                 setLoading(true);
                 
                 const code = generateRoomCode();
                 const newId = Math.random().toString(36).substr(2, 9);
                 const timestamp = Date.now();
                 
-                if (db) {
-                    const roomRef = db.ref(`rooms/${code}`);
-                    const initialData = {
-                        code: code,
-                        hostId: newId,
-                        maxPlayers: numPlayers,
-                        createdAt: timestamp,
-                        gameState: 'lobby',
-                        players: {
-                            [newId]: {
-                                id: newId,
-                                name: playerName,
-                                isHost: true
-                            }
+                const roomRef = db.ref(`rooms/${code}`);
+                const initialData = {
+                    code: code,
+                    hostId: newId,
+                    maxPlayers: numPlayers,
+                    createdAt: timestamp,
+                    gameState: 'lobby',
+                    players: {
+                        [newId]: {
+                            id: newId,
+                            name: playerName,
+                            isHost: true
                         }
-                    };
-                    
-                    roomRef.set(initialData).then(() => {
-                        setTimeout(() => {
-                            setOnlineRoomCode(code);
-                            setPlayerId(newId);
-                            setIsHost(true);
-                            setPlayers([{ id: newId, name: playerName, isHost: true }]);
-                            setIsOnline(true);
-                            setMaxPlayers(numPlayers);
-                            setGameState('lobby');
-                            setLoading(false);
-                            setSyncError(null);
-                        }, 300);
-                    }).catch(err => {
-                        console.error("Failed to create room:", err);
-                        alert("Failed to create room. Check your connection.");
-                        setLoading(false);
-                    });
-                } else {
-                    // Fallback to local mode
+                    }
+                };
+                
+                roomRef.set(initialData).then(() => {
+                    console.log("✓ Room created:", code);
                     setTimeout(() => {
                         setOnlineRoomCode(code);
                         setPlayerId(newId);
@@ -483,9 +494,13 @@ const firebaseConfig = {
                         setMaxPlayers(numPlayers);
                         setGameState('lobby');
                         setLoading(false);
-                        setSyncError("Running in local mode - invite friends manually");
-                    }, 500);
-                }
+                        setSyncError(null);
+                    }, 300);
+                }).catch(err => {
+                    console.error("✗ Failed to create room:", err.message);
+                    alert(`Failed to create room: ${err.message}\n\nCheck:\n- Internet connection\n- Firebase rules allow write access\n- Database URL is correct`);
+                    setLoading(false);
+                });
             };
 
             const handleJoinOnlineGame = () => {
@@ -493,63 +508,64 @@ const firebaseConfig = {
                     alert('Please enter your name and room code');
                     return;
                 }
+
+                if (!db) {
+                    alert("Firebase not connected.\n\n1. Check your internet connection\n2. Refresh the page\n3. Check browser console (F12) for errors");
+                    return;
+                }
+
                 setLoading(true);
                 
-                if (db) {
-                    const roomRef = db.ref(`rooms/${onlineRoomCode.trim()}`);
-                    roomRef.get().then((snapshot) => {
-                        if (!snapshot.exists()) {
-                            alert('Room not found. Check the code and try again.');
+                const roomRef = db.ref(`rooms/${onlineRoomCode.trim()}`);
+                roomRef.get().then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        alert('Room not found. Check the code and try again.');
+                        setLoading(false);
+                        return;
+                    }
+
+                    const roomData = snapshot.val();
+                    const currentPlayers = Object.values(roomData.players || {});
+
+                    if (currentPlayers.length >= roomData.maxPlayers) {
+                        alert('Room is full!');
+                        setLoading(false);
+                        return;
+                    }
+
+                    const newId = Math.random().toString(36).substr(2, 9);
+                    const newPlayer = {
+                        id: newId,
+                        name: playerName,
+                        isHost: false
+                    };
+
+                    // Add new player to room
+                    roomRef.update({
+                        [`players/${newId}`]: newPlayer
+                    }).then(() => {
+                        console.log("✓ Joined room:", onlineRoomCode.trim());
+                        setTimeout(() => {
+                            setOnlineRoomCode(onlineRoomCode.trim());
+                            setPlayerId(newId);
+                            setIsHost(false);
+                            setPlayers([...currentPlayers, newPlayer]);
+                            setIsOnline(true);
+                            setMaxPlayers(roomData.maxPlayers);
+                            setGameState('lobby');
                             setLoading(false);
-                            return;
-                        }
-
-                        const roomData = snapshot.val();
-                        const currentPlayers = Object.values(roomData.players || {});
-
-                        if (currentPlayers.length >= roomData.maxPlayers) {
-                            alert('Room is full!');
-                            setLoading(false);
-                            return;
-                        }
-
-                        const newId = Math.random().toString(36).substr(2, 9);
-                        const newPlayer = {
-                            id: newId,
-                            name: playerName,
-                            isHost: false
-                        };
-
-                        // Add new player to room
-                        roomRef.update({
-                            [`players/${newId}`]: newPlayer
-                        }).then(() => {
-                            setTimeout(() => {
-                                setOnlineRoomCode(onlineRoomCode.trim());
-                                setPlayerId(newId);
-                                setIsHost(false);
-                                setPlayers([...currentPlayers, newPlayer]);
-                                setIsOnline(true);
-                                setMaxPlayers(roomData.maxPlayers);
-                                setGameState('lobby');
-                                setLoading(false);
-                                setSyncError(null);
-                            }, 300);
-                        }).catch(err => {
-                            console.error("Failed to join room:", err);
-                            alert("Failed to join room. Try again.");
-                            setLoading(false);
-                        });
+                            setSyncError(null);
+                        }, 300);
                     }).catch(err => {
-                        console.error("Failed to get room:", err);
-                        alert("Connection error. Check internet and try again.");
+                        console.error("✗ Failed to join room:", err.message);
+                        alert(`Failed to join room: ${err.message}`);
                         setLoading(false);
                     });
-                } else {
-                    // Fallback to local mode
-                    alert("Firebase not connected. Room codes won't work.");
+                }).catch(err => {
+                    console.error("✗ Failed to get room:", err.message);
+                    alert(`Connection error: ${err.message}\n\nMake sure the room code is correct.`);
                     setLoading(false);
-                }
+                });
             };
 
             const handleStartGameSession = () => {
@@ -983,9 +999,14 @@ const firebaseConfig = {
                                                 ⚠️ {syncError}
                                             </div>
                                         )}
-                                        {!syncError && (
+                                        {!syncError && db && (
                                             <div className="mt-2 text-xs text-green-600 bg-green-950/40 border border-green-800 rounded px-3 py-2">
                                                 ✓ Connected - players syncing live
+                                            </div>
+                                        )}
+                                        {!db && (
+                                            <div className="mt-2 text-xs text-red-600 bg-red-950/40 border border-red-800 rounded px-3 py-2">
+                                                ✗ Firebase connection failed. Check browser console (F12) for details.
                                             </div>
                                         )}
                                     </div>
