@@ -227,238 +227,9 @@
             return Math.random().toString(36).substring(2, 8).toUpperCase();
         }
 
-        function LandingScreen({ onCreateGame, onJoinGame, loading }) {
-            return (
-                <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
-                    <div>
-                        <h1 className="font-display text-6xl font-extrabold mb-3 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                            Paranoia
-                        </h1>
-                        <p className="text-zinc-400 text-lg">The Ultimate Party Game</p>
-                    </div>
-
-                    <div className="space-y-4 w-full max-w-xs">
-                        <button
-                            onClick={onCreateGame}
-                            disabled={loading}
-                            className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30"
-                            style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
-                        >
-                            <Zap size={18} /> Create Game
-                        </button>
-                        <button
-                            onClick={onJoinGame}
-                            disabled={loading}
-                            className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-cyan-500/30"
-                            style={{ background: "linear-gradient(135deg,#0e7490,#0891b2)" }}
-                        >
-                            <Users size={18} /> Join Game
-                        </button>
-                    </div>
-
-                    <p className="text-zinc-500 text-sm max-w-sm leading-relaxed">
-                        Play with friends online or locally. Ask anonymously, guess carefully, and prepare for the paranoia.
-                    </p>
-                </div>
-            );
-        }
-
-        function GameSetupScreen({ gameMode, onStart, onBack, playerName, setPlayerName, numPlayers, setNumPlayers, isOnline, onlineRoomCode, setOnlineRoomCode, isJoiningRoom }) {
-            if (gameMode === 'create-local') {
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
-                        <h2 className="font-display text-4xl font-extrabold">Set Up Your Game</h2>
-                        
-                        <div className="w-full max-w-xs space-y-4">
-                            <div>
-                                <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
-                                <input
-                                    type="text"
-                                    value={playerName}
-                                    onChange={(e) => setPlayerName(e.target.value)}
-                                    placeholder="Enter your name"
-                                    className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Number of Players</label>
-                                <input
-                                    type="number"
-                                    min="2"
-                                    max="20"
-                                    value={numPlayers}
-                                    onChange={(e) => setNumPlayers(Math.max(2, parseInt(e.target.value) || 2))}
-                                    className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-4 w-full max-w-xs">
-                            <button
-                                onClick={onBack}
-                                className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
-                            >
-                                Back
-                            </button>
-                            <button
-                                onClick={() => onStart({ playerName, numPlayers, isOnline: false })}
-                                disabled={!playerName.trim()}
-                                className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-violet-600 hover:bg-violet-500 transition-colors disabled:opacity-50"
-                            >
-                                Start Game
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (gameMode === 'create-online') {
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
-                        <h2 className="font-display text-4xl font-extrabold">Create Online Game</h2>
-                        
-                        <div className="w-full max-w-xs space-y-4">
-                            <div>
-                                <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
-                                <input
-                                    type="text"
-                                    value={playerName}
-                                    onChange={(e) => setPlayerName(e.target.value)}
-                                    placeholder="Enter your name"
-                                    className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Max Players</label>
-                                <input
-                                    type="number"
-                                    min="2"
-                                    max="20"
-                                    value={numPlayers}
-                                    onChange={(e) => setNumPlayers(Math.max(2, parseInt(e.target.value) || 2))}
-                                    className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-4 w-full max-w-xs">
-                            <button
-                                onClick={onBack}
-                                className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
-                            >
-                                Back
-                            </button>
-                            <button
-                                onClick={() => onStart({ playerName, numPlayers, isOnline: true })}
-                                disabled={!playerName.trim()}
-                                className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-cyan-600 hover:bg-cyan-500 transition-colors disabled:opacity-50"
-                            >
-                                Create
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (gameMode === 'join-online') {
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
-                        <h2 className="font-display text-4xl font-extrabold">Join Game</h2>
-                        
-                        <div className="w-full max-w-xs space-y-4">
-                            <div>
-                                <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
-                                <input
-                                    type="text"
-                                    value={playerName}
-                                    onChange={(e) => setPlayerName(e.target.value)}
-                                    placeholder="Enter your name"
-                                    className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Room Code</label>
-                                <input
-                                    type="text"
-                                    value={onlineRoomCode}
-                                    onChange={(e) => setOnlineRoomCode(e.target.value.toUpperCase())}
-                                    placeholder="e.g., ABC123"
-                                    maxLength="6"
-                                    className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-center text-lg font-bold focus:outline-none focus:border-cyan-500 tracking-widest"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-4 w-full max-w-xs">
-                            <button
-                                onClick={onBack}
-                                className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
-                            >
-                                Back
-                            </button>
-                            <button
-                                onClick={() => onStart({ playerName, onlineRoomCode, isOnline: true, isJoining: true })}
-                                disabled={!playerName.trim() || !onlineRoomCode.trim() || isJoiningRoom}
-                                className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-cyan-600 hover:bg-cyan-500 transition-colors disabled:opacity-50"
-                            >
-                                {isJoiningRoom ? 'Joining...' : 'Join'}
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-        }
-
-        function LobbyScreen({ players, roomCode, onStartGame, isHost, gameStarted, maxPlayers }) {
-            return (
-                <div className="flex flex-col min-h-screen px-6 pt-8 pb-8">
-                    <div className="mb-8">
-                        <h2 className="font-display text-3xl font-extrabold mb-2">Game Lobby</h2>
-                        {roomCode && (
-                            <div className="glass rounded-lg px-4 py-2 inline-flex items-center gap-2 text-sm text-cyan-400 border-zinc-800">
-                                <span className="font-mono font-bold">{roomCode}</span>
-                                <button onClick={() => navigator.clipboard.writeText(roomCode)} className="hover:text-cyan-300">
-                                    <Copy size={14} />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex-1">
-                        <h3 className="text-zinc-400 text-xs uppercase tracking-widest font-semibold mb-4">Players ({players.length}/{maxPlayers})</h3>
-                        <div className="space-y-2">
-                            {players.map((p) => (
-                                <div key={p.id} className="glass rounded-lg px-4 py-3 flex items-center justify-between border-zinc-800">
-                                    <span className="text-white font-medium">{p.name}</span>
-                                    {p.isHost && <span className="text-xs bg-violet-950 text-violet-300 px-2 py-1 rounded border border-violet-800 font-semibold">HOST</span>}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {isHost && !gameStarted && (
-                        <button
-                            onClick={onStartGame}
-                            disabled={players.length < 2}
-                            className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30 disabled:opacity-50"
-                            style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
-                        >
-                            <Zap size={16} /> Start Game
-                        </button>
-                    )}
-                    {!isHost && (
-                        <div className="text-center text-zinc-500 text-sm">Waiting for host to start...</div>
-                    )}
-                </div>
-            );
-        }
-
-        function ParanoiaGame() {
-            const [screen, setScreen] = React.useState('landing');
-            const [gameMode, setGameMode] = React.useState(null);
+function ParanoiaGame() {
+            const [screen, setScreen] = React.useState('landing'); // landing, mode-select, setup, lobby, playing
+            const [gameMode, setGameMode] = React.useState(null); // 'local', 'create-online', 'join-online'
             const [players, setPlayers] = React.useState([]);
             const [currentPlayerIdx, setCurrentPlayerIdx] = React.useState(0);
             const [playerName, setPlayerName] = React.useState('');
@@ -472,8 +243,9 @@
             const [revealed, setRevealed] = React.useState(false);
             const [coinFlipping, setCoinFlipping] = React.useState(false);
             const [coinResult, setCoinResult] = React.useState(null);
-            const [gameState, setGameState] = React.useState('setup');
+            const [gameState, setGameState] = React.useState('setup'); // setup, lobby, playing
             const [isOnline, setIsOnline] = React.useState(false);
+            const [maxPlayers, setMaxPlayers] = React.useState(4);
 
             React.useEffect(() => {
                 initializeFirebase();
@@ -484,86 +256,84 @@
                 return allQuestions[Math.floor(Math.random() * allQuestions.length)];
             };
 
-            const handleCreateGame = () => {
-                setGameMode('create-local');
+            // Landing Screen Handlers
+            const handleGoToModeSelect = () => {
+                setScreen('mode-select');
             };
 
-            const handleJoinGame = () => {
-                setGameMode('create-online');
+            const handleSelectMode = (mode) => {
+                setGameMode(mode);
+                setScreen('setup');
             };
 
-            const handleSelectGameType = (isOnline) => {
-                if (isOnline) {
-                    setGameMode('create-online');
-                } else {
-                    setGameMode('create-local');
-                }
-            };
-
-            const handleStartGame = async (config) => {
+            // Setup Screen Handlers
+            const handleStartLocalGame = () => {
+                if (!playerName.trim()) return;
                 setLoading(true);
-                try {
-                    if (config.isOnline && config.isJoining) {
-                        // Join existing game
-                        setGameMode('join-online');
-                        setOnlineRoomCode(config.onlineRoomCode);
-                        setPlayerName(config.playerName);
-                        setIsJoiningRoom(true);
-                        // Simulate joining
-                        setTimeout(() => {
-                            const newId = Math.random().toString(36).substr(2, 9);
-                            setPlayerId(newId);
-                            setIsHost(false);
-                            setPlayers([
-                                { id: newId, name: config.playerName, isHost: false }
-                            ]);
-                            setGameState('lobby');
-                            setIsOnline(true);
-                            setIsJoiningRoom(false);
-                        }, 1000);
-                    } else if (config.isOnline) {
-                        // Create online game
-                        const code = generateRoomCode();
-                        setOnlineRoomCode(code);
-                        setPlayerName(config.playerName);
-                        const newId = Math.random().toString(36).substr(2, 9);
-                        setPlayerId(newId);
-                        setIsHost(true);
-                        setPlayers([
-                            { id: newId, name: config.playerName, isHost: true }
-                        ]);
-                        setGameState('lobby');
-                        setIsOnline(true);
-                    } else {
-                        // Local game
-                        const newPlayers = [];
-                        for (let i = 0; i < config.numPlayers; i++) {
-                            newPlayers.push({
-                                id: i.toString(),
-                                name: i === 0 ? config.playerName : `Player ${i + 1}`,
-                                isHost: i === 0
-                            });
-                        }
-                        setPlayers(newPlayers);
-                        setPlayerName(config.playerName);
-                        const newId = '0';
-                        setPlayerId(newId);
-                        setIsHost(true);
-                        setGameState('lobby');
-                        setIsOnline(false);
+                setTimeout(() => {
+                    const newPlayers = [];
+                    for (let i = 0; i < numPlayers; i++) {
+                        newPlayers.push({
+                            id: i.toString(),
+                            name: i === 0 ? playerName : `Player ${i + 1}`,
+                            isHost: i === 0
+                        });
                     }
-                } catch (e) {
-                    console.error('Error starting game:', e);
-                    alert('Failed to start game');
-                } finally {
+                    setPlayers(newPlayers);
+                    setPlayerId('0');
+                    setIsHost(true);
+                    setIsOnline(false);
+                    setGameState('lobby');
                     setLoading(false);
+                }, 500);
+            };
+
+            const handleCreateOnlineGame = () => {
+                if (!playerName.trim()) return;
+                setLoading(true);
+                setTimeout(() => {
+                    const code = generateRoomCode();
+                    const newId = Math.random().toString(36).substr(2, 9);
+                    setOnlineRoomCode(code);
+                    setPlayerId(newId);
+                    setIsHost(true);
+                    setPlayers([{ id: newId, name: playerName, isHost: true }]);
+                    setIsOnline(true);
+                    setMaxPlayers(numPlayers);
+                    setGameState('lobby');
+                    setLoading(false);
+                }, 500);
+            };
+
+            const handleJoinOnlineGame = () => {
+                if (!playerName.trim() || !onlineRoomCode.trim()) {
+                    alert('Please enter your name and room code');
+                    return;
                 }
+                setIsJoiningRoom(true);
+                setLoading(true);
+                setTimeout(() => {
+                    const newId = Math.random().toString(36).substr(2, 9);
+                    setPlayerId(newId);
+                    setIsHost(false);
+                    setPlayers([{ id: newId, name: playerName, isHost: false }]);
+                    setIsOnline(true);
+                    setGameState('lobby');
+                    setIsJoiningRoom(false);
+                    setLoading(false);
+                }, 500);
             };
 
             const handleStartGameSession = () => {
+                if (players.length < 2) {
+                    alert('Need at least 2 players to start');
+                    return;
+                }
                 setCurrentQuestion(getRandomQuestion());
                 setCurrentPlayerIdx(0);
                 setGameState('playing');
+                setRevealed(false);
+                setCoinResult(null);
             };
 
             const handleFlipCoin = () => {
@@ -580,7 +350,6 @@
                 setCurrentPlayerIdx((prev) => (prev + 1) % players.length);
                 setRevealed(false);
                 setCoinResult(null);
-                setGameState('playing');
             };
 
             const handleBackToLanding = () => {
@@ -594,40 +363,300 @@
                 setRevealed(false);
                 setCoinFlipping(false);
                 setCoinResult(null);
+                setOnlineRoomCode('');
             };
 
+            // Render Screens
             if (screen === 'landing') {
-                return <LandingScreen onCreateGame={handleCreateGame} onJoinGame={handleJoinGame} loading={loading} />;
-            }
-
-            if (gameState === 'setup') {
                 return (
-                    <GameSetupScreen
-                        gameMode={gameMode}
-                        onStart={handleStartGame}
-                        onBack={handleBackToLanding}
-                        playerName={playerName}
-                        setPlayerName={setPlayerName}
-                        numPlayers={numPlayers}
-                        setNumPlayers={setNumPlayers}
-                        isOnline={isOnline}
-                        onlineRoomCode={onlineRoomCode}
-                        setOnlineRoomCode={setOnlineRoomCode}
-                        isJoiningRoom={isJoiningRoom}
-                    />
+                    <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
+                        <div>
+                            <h1 className="font-display text-6xl font-extrabold mb-3 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                                Paranoia
+                            </h1>
+                            <p className="text-zinc-400 text-lg">The Ultimate Party Game</p>
+                        </div>
+
+                        <div className="space-y-4 w-full max-w-xs">
+                            <button
+                                onClick={handleGoToModeSelect}
+                                disabled={loading}
+                                className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30"
+                                style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
+                            >
+                                <Zap size={18} /> Play Game
+                            </button>
+                        </div>
+
+                        <p className="text-zinc-500 text-sm max-w-sm leading-relaxed">
+                            Play with friends online or locally. Ask anonymously, guess carefully, and prepare for the paranoia.
+                        </p>
+                    </div>
                 );
             }
 
-            if (gameState === 'lobby') {
+            if (screen === 'mode-select') {
                 return (
-                    <LobbyScreen
-                        players={players}
-                        roomCode={onlineRoomCode}
-                        onStartGame={handleStartGameSession}
-                        isHost={isHost}
-                        gameStarted={gameState === 'playing'}
-                        maxPlayers={isOnline ? numPlayers : players.length}
-                    />
+                    <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
+                        <h2 className="font-display text-4xl font-extrabold">Choose Game Mode</h2>
+                        
+                        <div className="space-y-4 w-full max-w-xs">
+                            <button
+                                onClick={() => handleSelectMode('local')}
+                                className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-purple-500/30"
+                                style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
+                            >
+                                <div className="text-2xl mb-2">🎮</div>
+                                Local Game
+                                <div className="text-xs text-purple-200 mt-1">Play with friends nearby</div>
+                            </button>
+                            <button
+                                onClick={() => handleSelectMode('online')}
+                                className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-cyan-500/30"
+                                style={{ background: "linear-gradient(135deg,#0e7490,#06b6d4)" }}
+                            >
+                                <div className="text-2xl mb-2">🌐</div>
+                                Online Game
+                                <div className="text-xs text-cyan-200 mt-1">Play with friends remotely</div>
+                            </button>
+                        </div>
+
+                        <button
+                            onClick={handleBackToLanding}
+                            className="mt-4 text-zinc-400 hover:text-zinc-300 text-sm"
+                        >
+                            Back
+                        </button>
+                    </div>
+                );
+            }
+
+            if (screen === 'setup') {
+                if (gameMode === 'local') {
+                    return (
+                        <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
+                            <h2 className="font-display text-4xl font-extrabold">Local Game Setup</h2>
+                            
+                            <div className="w-full max-w-xs space-y-4">
+                                <div>
+                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
+                                    <input
+                                        type="text"
+                                        value={playerName}
+                                        onChange={(e) => setPlayerName(e.target.value)}
+                                        placeholder="Enter your name"
+                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Number of Players</label>
+                                    <input
+                                        type="number"
+                                        min="2"
+                                        max="20"
+                                        value={numPlayers}
+                                        onChange={(e) => setNumPlayers(Math.max(2, parseInt(e.target.value) || 2))}
+                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 w-full max-w-xs">
+                                <button
+                                    onClick={() => setScreen('mode-select')}
+                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
+                                >
+                                    Back
+                                </button>
+                                <button
+                                    onClick={handleStartLocalGame}
+                                    disabled={!playerName.trim() || loading}
+                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-violet-600 hover:bg-violet-500 transition-colors disabled:opacity-50"
+                                >
+                                    {loading ? 'Starting...' : 'Start Game'}
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+
+                if (gameMode === 'online') {
+                    return (
+                        <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
+                            <h2 className="font-display text-4xl font-extrabold">Online Game</h2>
+                            
+                            <div className="space-y-4 w-full max-w-xs">
+                                <button
+                                    onClick={() => setGameMode('create-online')}
+                                    className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-cyan-500/30"
+                                    style={{ background: "linear-gradient(135deg,#0e7490,#06b6d4)" }}
+                                >
+                                    <div className="text-2xl mb-2">➕</div>
+                                    Create Room
+                                    <div className="text-xs text-cyan-200 mt-1">Get a code for friends to join</div>
+                                </button>
+                                <button
+                                    onClick={() => setGameMode('join-online')}
+                                    className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-fuchsia-500/30"
+                                    style={{ background: "linear-gradient(135deg,#be185d,#7c3aed)" }}
+                                >
+                                    <div className="text-2xl mb-2">🔗</div>
+                                    Join Room
+                                    <div className="text-xs text-fuchsia-200 mt-1">Enter a room code to join friends</div>
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={() => setScreen('mode-select')}
+                                className="text-zinc-400 hover:text-zinc-300 text-sm"
+                            >
+                                Back
+                            </button>
+                        </div>
+                    );
+                }
+
+                if (gameMode === 'create-online') {
+                    return (
+                        <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
+                            <h2 className="font-display text-4xl font-extrabold">Create Online Room</h2>
+                            
+                            <div className="w-full max-w-xs space-y-4">
+                                <div>
+                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
+                                    <input
+                                        type="text"
+                                        value={playerName}
+                                        onChange={(e) => setPlayerName(e.target.value)}
+                                        placeholder="Enter your name"
+                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-cyan-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Max Players</label>
+                                    <input
+                                        type="number"
+                                        min="2"
+                                        max="20"
+                                        value={numPlayers}
+                                        onChange={(e) => setNumPlayers(Math.max(2, parseInt(e.target.value) || 2))}
+                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-cyan-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 w-full max-w-xs">
+                                <button
+                                    onClick={() => setGameMode('online')}
+                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
+                                >
+                                    Back
+                                </button>
+                                <button
+                                    onClick={handleCreateOnlineGame}
+                                    disabled={!playerName.trim() || loading}
+                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-cyan-600 hover:bg-cyan-500 transition-colors disabled:opacity-50"
+                                >
+                                    {loading ? 'Creating...' : 'Create'}
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+
+                if (gameMode === 'join-online') {
+                    return (
+                        <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
+                            <h2 className="font-display text-4xl font-extrabold">Join Online Room</h2>
+                            
+                            <div className="w-full max-w-xs space-y-4">
+                                <div>
+                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
+                                    <input
+                                        type="text"
+                                        value={playerName}
+                                        onChange={(e) => setPlayerName(e.target.value)}
+                                        placeholder="Enter your name"
+                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-fuchsia-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Room Code</label>
+                                    <input
+                                        type="text"
+                                        value={onlineRoomCode}
+                                        onChange={(e) => setOnlineRoomCode(e.target.value.toUpperCase())}
+                                        placeholder="e.g., ABC123"
+                                        maxLength="6"
+                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-center text-lg font-bold focus:outline-none focus:border-fuchsia-500 tracking-widest"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 w-full max-w-xs">
+                                <button
+                                    onClick={() => setGameMode('online')}
+                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
+                                >
+                                    Back
+                                </button>
+                                <button
+                                    onClick={handleJoinOnlineGame}
+                                    disabled={!playerName.trim() || !onlineRoomCode.trim() || isJoiningRoom || loading}
+                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-fuchsia-600 hover:bg-fuchsia-500 transition-colors disabled:opacity-50"
+                                >
+                                    {loading ? 'Joining...' : 'Join'}
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+            }
+
+            if (screen === 'setup' && gameState === 'lobby') {
+                return (
+                    <div className="flex flex-col min-h-screen px-6 pt-8 pb-8">
+                        <div className="mb-8">
+                            <h2 className="font-display text-3xl font-extrabold mb-2">Game Lobby</h2>
+                            {onlineRoomCode && (
+                                <div className="glass rounded-lg px-4 py-2 inline-flex items-center gap-2 text-sm text-cyan-400 border-zinc-800">
+                                    <span className="font-mono font-bold">{onlineRoomCode}</span>
+                                    <button onClick={() => navigator.clipboard.writeText(onlineRoomCode)} className="hover:text-cyan-300">
+                                        <Copy size={14} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex-1">
+                            <h3 className="text-zinc-400 text-xs uppercase tracking-widest font-semibold mb-4">Players ({players.length}/{maxPlayers})</h3>
+                            <div className="space-y-2">
+                                {players.map((p) => (
+                                    <div key={p.id} className="glass rounded-lg px-4 py-3 flex items-center justify-between border-zinc-800">
+                                        <span className="text-white font-medium">{p.name}</span>
+                                        {p.isHost && <span className="text-xs bg-violet-950 text-violet-300 px-2 py-1 rounded border border-violet-800 font-semibold">HOST</span>}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {isHost && (
+                            <button
+                                onClick={handleStartGameSession}
+                                disabled={players.length < 2}
+                                className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30 disabled:opacity-50"
+                                style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
+                            >
+                                <Zap size={16} /> Start Game
+                            </button>
+                        )}
+                        {!isHost && (
+                            <div className="text-center text-zinc-500 text-sm">Waiting for host to start...</div>
+                        )}
+                    </div>
                 );
             }
 
