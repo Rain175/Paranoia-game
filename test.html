@@ -5,21 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paranoia - The Ultimate Party Game</title>
     
-    <!-- Load Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Load React & React-DOM via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     
-    <!-- Load Babel Standalone to compile JSX natively in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-    <!-- Configure Google Fonts (Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -62,140 +57,21 @@
 
     <script type="text/babel">
         // Icons
-        function Plus({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="M12 5v14"/></svg>;
-        }
-        function Trash2({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>;
-        }
-        function Eye({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg>;
-        }
-        function EyeOff({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.578 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 9.415a3 3 0 0 0-4.669 4.11"/><path d="m2 2 20 20"/><path d="M4.532 4.532A10.738 10.738 0 0 0 2.062 11.65a1 1 0 0 0 0 .696 10.75 10.75 0 0 0 11.754 6.744"/></svg>;
-        }
-        function ChevronRight({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>;
-        }
-        function Zap({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m13 2-2 10h9L9 22l2-10H2Z"/></svg>;
-        }
-        function Check({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 6 9 17l-5-5"/></svg>;
-        }
-        function Shuffle({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.2 0 2.3.6 3 1.7l1.1 1.6"/><path d="m15.4 12.8 1.2 1.7c.8 1.1 2 1.7 3.2 1.7H22"/><path d="m18 14 4 4-4 4"/></svg>;
-        }
-        function Users({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
-        }
-        function Copy({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>;
-        }
-        function LogOut({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>;
-        }
+        function Plus({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="M12 5v14"/></svg>; }
+        function Trash2({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>; }
+        function Eye({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg>; }
+        function EyeOff({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.578 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 9.415a3 3 0 0 0-4.669 4.11"/><path d="m2 2 20 20"/><path d="M4.532 4.532A10.738 10.738 0 0 0 2.062 11.65a1 1 0 0 0 0 .696 10.75 10.75 0 0 0 11.754 6.744"/></svg>; }
+        function ChevronRight({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>; }
+        function Zap({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m13 2-2 10h9L9 22l2-10H2Z"/></svg>; }
+        function Check({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 6 9 17l-5-5"/></svg>; }
+        function Shuffle({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.2 0 2.3.6 3 1.7l1.1 1.6"/><path d="m15.4 12.8 1.2 1.7c.8 1.1 2 1.7 3.2 1.7H22"/><path d="m18 14 4 4-4 4"/></svg>; }
+        function Users({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>; }
+        function Copy({ size = 16, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>; }
 
         const QUESTIONS = {
-          icebreaker: [
-            "Which player do you think is the most fun to be around?",
-            "Who has the best fashion sense in the group?",
-            "Who is most likely to cry during a sad movie?",
-            "Who do you think is the best-dressed here?",
-            "Who is the least likely to be up for a spontaneous plan?",
-            "Who is most likely to become a social media influencer?",
-            "Can you guess who here hasn't read a book since high school?",
-            "Which player has the best sense of humor?",
-            "Who tells the best dad jokes?",
-            "Which person here would be the best on Big Brother?",
-            "Who do you think has the most controversial food opinions?",
-            "Who is most likely to volunteer as tribute in the Hunger Games?",
-            "Who in this room do you trust the most?",
-            "Who always has the best advice during a crisis?",
-            "Who is the unsung soldier holding the group together?",
-            "Which member in the group has grown the most in the past year?",
-            "Who do you think will be the most successful in 10 years?",
-            "Who here deserves more appreciation and recognition from the group?",
-            "Which member do you think has a secret LEGO obsession?",
-            "Who is most likely to adopt 10 pets in the future?",
-            "Who has the most creative imagination?",
-            "Who is most likely to get excited over an animated film?",
-            "Which member in the group is the handiest at building things?",
-            "Which player gives the cuddliest hugs?",
-            "Who amongst the group do you think is the luckiest in love?",
-            "Which member are you secretly very afraid of?",
-            "Who sitting here is likely to get jealous if you go out with a new friend?",
-            "Which player are you least likely to call during an emergency?",
-            "Who is most likely to embarrass a friend in public?",
-            "Pick someone in the group who is most likely to have a weird phobia",
-            "Who do you think deserves a better romantic partner?",
-          ],
-          funny: [
-            "Who is most likely to get lost even with a GPS?",
-            "Who's most likely to be late for a plan because they stopped to pet a dog?",
-            "Who do you think has the most embarrassing Spotify playlists?",
-            "Who's most likely to get blocked by a celebrity on social media?",
-            "Who is guilty of never matching their socks?",
-            "Who should have a reality TV show based on their life?",
-            "Who would accidentally send a text to the wrong person?",
-            "Who do you think has the highest alcohol tolerance?",
-            "Which member has the best dance moves when drunk?",
-            "Who do you think is the life of the party?",
-            "Which player throws the best parties?",
-            "Who is most likely to start a conga line?",
-            "Which player in the group is most likely to have the sickest playlist?",
-            "Who is most likely to be the party pooper?",
-            "Who is most likely to finish all the party snacks when no one's watching?",
-            "Who can't cook to save their life?",
-            "Who's the gossip monger of the group?",
-            "Who is the worst texter present here?",
-            "Who is most likely to get an embarrassing tattoo?",
-            "Which player is pursuing the wrong career?",
-            "Who should try their hand at stand-up comedy?",
-            "Who in the group has the dirtiest sense of humor?",
-          ],
-          devious: [
-            "Who is most likely to scam you?",
-            "Who would be the scariest as a villain?",
-            "Who is most likely to steal your fries?",
-            "Who would make the best con artist?",
-            "Who would be most likely to fake their own death?",
-            "Who is most likely to sabotage you?",
-            "Who would backstab you for a million dollars?",
-            "Who is most likely to start drama?",
-            "Who would be the worst person to keep a secret with?",
-            "Who is most likely to ghost you?",
-            "Who would be most likely to laugh at you when you trip?",
-            "Who is the most manipulative?",
-            "Who would be the best liar?",
-            "Who is most likely to use you to get what they want?",
-            "Who would snitch on you?",
-            "Who is most likely to take credit for your work?",
-            "Who would betray your trust?",
-            "Who is the shadiest person here?",
-            "Who would gaslight you?",
-            "Who would spread rumors about you?",
-          ],
-          romantic: [
-            "Who do you think would be the most romantic on a date?",
-            "Who is most likely to get butterflies in their stomach?",
-            "Who would make the best partner?",
-            "Who is most likely to be hopelessly in love?",
-            "Who's most likely to write love poems?",
-            "Who would be the best at expressing their feelings?",
-            "Who is most likely to fall first?",
-            "Who would make the best parent?",
-            "Who do you think is the most attractive?",
-            "Who would be the best at giving massages?",
-            "Who would make you feel the most loved?",
-            "Who is most likely to be overly affectionate?",
-            "Who would write the best love letter?",
-            "Who is most likely to propose first?",
-            "Who do you think would be a great soulmate?",
-            "Who has the best kissing skills?",
-            "Who would make the best cuddle buddy?",
-            "Who is most likely to fall in love with you?",
-          ],
+          icebreaker: ["Which player do you think is the most fun to be around?", "Who has the best fashion sense in the group?", "Who is most likely to cry during a sad movie?", "Who do you think is the best-dressed here?", "Who is the least likely to be up for a spontaneous plan?", "Who is most likely to become a social media influencer?", "Can you guess who here hasn't read a book since high school?", "Which player has the best sense of humor?", "Who tells the best dad jokes?", "Which person here would be the best on Big Brother?", "Who do you think has the most controversial food opinions?", "Who is most likely to volunteer as tribute in the Hunger Games?", "Who in this room do you trust the most?", "Who always has the best advice during a crisis?", "Who is the unsung soldier holding the group together?", "Which member in the group has grown the most in the past year?", "Who do you think will be the most successful in 10 years?", "Who here deserves more appreciation and recognition from the group?", "Which member do you think has a secret LEGO obsession?", "Who is most likely to adopt 10 pets in the future?", "Who has the most creative imagination?", "Who is most likely to get excited over an animated film?", "Which member in the group is the handiest at building things?", "Which player gives the cuddliest hugs?", "Who amongst the group do you think is the luckiest in love?", "Which member are you secretly very afraid of?", "Who sitting here is likely to get jealous if you go out with a new friend?", "Which player are you least likely to call during an emergency?", "Who is most likely to embarrass a friend in public?", "Pick someone in the group who is most likely to have a weird phobia", "Who do you think deserves a better romantic partner?"],
+          funny: ["Who is most likely to get lost even with a GPS?", "Who's most likely to be late for a plan because they stopped to pet a dog?", "Who do you think has the most embarrassing Spotify playlists?", "Who's most likely to get blocked by a celebrity on social media?", "Who is guilty of never matching their socks?", "Who should have a reality TV show based on their life?", "Who would accidentally send a text to the wrong person?", "Who do you think has the highest alcohol tolerance?", "Which member has the best dance moves when drunk?", "Who do you think is the life of the party?", "Which player throws the best parties?", "Who is most likely to start a conga line?", "Which player in the group is most likely to have the sickest playlist?", "Who is most likely to be the party pooper?", "Who is most likely to finish all the party snacks when no one's watching?", "Who can't cook to save their life?", "Who's the gossip monger of the group?", "Who is the worst texter present here?", "Who is most likely to get an embarrassing tattoo?", "Which player is pursuing the wrong career?", "Who should try their hand at stand-up comedy?", "Who in the group has the dirtiest sense of humor?"],
+          devious: ["Who is most likely to scam you?", "Who would be the scariest as a villain?", "Who is most likely to steal your fries?", "Who would make the best con artist?", "Who would be most likely to fake their own death?", "Who is most likely to sabotage you?", "Who would backstab you for a million dollars?", "Who is most likely to start drama?", "Who would be the worst person to keep a secret with?", "Who is most likely to ghost you?", "Who would be most likely to laugh at you when you trip?", "Who is the most manipulative?", "Who would be the best liar?", "Who is most likely to use you to get what they want?", "Who would snitch on you?", "Who is most likely to take credit for your work?", "Who would betray your trust?", "Who is the shadiest person here?", "Who would gaslight you?", "Who would spread rumors about you?"],
         };
 
         // Firebase Configuration
@@ -227,12 +103,16 @@
             return Math.random().toString(36).substring(2, 8).toUpperCase();
         }
 
-function ParanoiaGame() {
+        function ParanoiaGame() {
             const [screen, setScreen] = React.useState('landing'); // landing, mode-select, setup, lobby, playing
             const [gameMode, setGameMode] = React.useState(null); // 'local', 'create-online', 'join-online'
             const [players, setPlayers] = React.useState([]);
             const [currentPlayerIdx, setCurrentPlayerIdx] = React.useState(0);
-            const [playerName, setPlayerName] = React.useState('');
+            
+            // Replaced single playerName with localPlayerNames array
+            const [playerName, setPlayerName] = React.useState(''); 
+            const [localPlayerNames, setLocalPlayerNames] = React.useState(['Player 1', 'Player 2', 'Player 3', 'Player 4']);
+            
             const [numPlayers, setNumPlayers] = React.useState(4);
             const [onlineRoomCode, setOnlineRoomCode] = React.useState('');
             const [isJoiningRoom, setIsJoiningRoom] = React.useState(false);
@@ -251,106 +131,199 @@ function ParanoiaGame() {
                 initializeFirebase();
             }, []);
 
+            // Firebase Listener for Online Syncing
+            React.useEffect(() => {
+                if (isOnline && onlineRoomCode && db) {
+                    const roomRef = db.ref(`rooms/${onlineRoomCode}`);
+                    const listener = roomRef.on('value', (snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            if (data.players) setPlayers(data.players);
+                            if (data.gameState) {
+                                setGameState(data.gameState);
+                                if (data.gameState === 'playing' && screen !== 'playing') setScreen('playing');
+                            }
+                            if (data.currentQuestion) setCurrentQuestion(data.currentQuestion);
+                            if (data.currentPlayerIdx !== undefined) setCurrentPlayerIdx(data.currentPlayerIdx);
+                            if (data.coinFlipping !== undefined) setCoinFlipping(data.coinFlipping);
+                            if (data.coinResult !== undefined) setCoinResult(data.coinResult);
+                            if (data.revealed !== undefined) setRevealed(data.revealed);
+                        }
+                    });
+                    return () => roomRef.off('value', listener);
+                }
+            }, [isOnline, onlineRoomCode]);
+
             const getRandomQuestion = () => {
                 const allQuestions = Object.values(QUESTIONS).flat();
                 return allQuestions[Math.floor(Math.random() * allQuestions.length)];
             };
 
-            // Landing Screen Handlers
-            const handleGoToModeSelect = () => {
-                setScreen('mode-select');
-            };
-
+            const handleGoToModeSelect = () => setScreen('mode-select');
             const handleSelectMode = (mode) => {
                 setGameMode(mode);
                 setScreen('setup');
             };
 
-            // Setup Screen Handlers
+            const handleLocalPlayerNameChange = (index, value) => {
+                const newNames = [...localPlayerNames];
+                newNames[index] = value;
+                setLocalPlayerNames(newNames);
+            };
+
+            const handleNumLocalPlayersChange = (e) => {
+                const num = Math.max(2, parseInt(e.target.value) || 2);
+                setNumPlayers(num);
+                setLocalPlayerNames(prev => {
+                    const newNames = [...prev];
+                    while (newNames.length < num) newNames.push(`Player ${newNames.length + 1}`);
+                    return newNames.slice(0, num);
+                });
+            };
+
             const handleStartLocalGame = () => {
-                if (!playerName.trim()) return;
                 setLoading(true);
                 setTimeout(() => {
-                    const newPlayers = [];
-                    for (let i = 0; i < numPlayers; i++) {
-                        newPlayers.push({
-                            id: i.toString(),
-                            name: i === 0 ? playerName : `Player ${i + 1}`,
-                            isHost: i === 0
-                        });
-                    }
+                    const newPlayers = localPlayerNames.map((name, i) => ({
+                        id: i.toString(),
+                        name: name.trim() || `Player ${i + 1}`,
+                        isHost: i === 0
+                    }));
                     setPlayers(newPlayers);
                     setPlayerId('0');
                     setIsHost(true);
                     setIsOnline(false);
                     setGameState('lobby');
+                    setScreen('lobby');
                     setLoading(false);
                 }, 500);
             };
 
             const handleCreateOnlineGame = () => {
-                if (!playerName.trim()) return;
+                if (!playerName.trim() || !db) return;
                 setLoading(true);
-                setTimeout(() => {
-                    const code = generateRoomCode();
-                    const newId = Math.random().toString(36).substr(2, 9);
+                const code = generateRoomCode();
+                const newId = Math.random().toString(36).substr(2, 9);
+                
+                const roomData = {
+                    players: [{ id: newId, name: playerName, isHost: true }],
+                    gameState: 'lobby',
+                    maxPlayers: numPlayers
+                };
+
+                db.ref(`rooms/${code}`).set(roomData).then(() => {
                     setOnlineRoomCode(code);
                     setPlayerId(newId);
                     setIsHost(true);
-                    setPlayers([{ id: newId, name: playerName, isHost: true }]);
                     setIsOnline(true);
                     setMaxPlayers(numPlayers);
                     setGameState('lobby');
+                    setScreen('lobby');
                     setLoading(false);
-                }, 500);
+                });
             };
 
             const handleJoinOnlineGame = () => {
-                if (!playerName.trim() || !onlineRoomCode.trim()) {
-                    alert('Please enter your name and room code');
-                    return;
-                }
+                if (!playerName.trim() || !onlineRoomCode.trim() || !db) return;
                 setIsJoiningRoom(true);
                 setLoading(true);
-                setTimeout(() => {
-                    const newId = Math.random().toString(36).substr(2, 9);
-                    setPlayerId(newId);
-                    setIsHost(false);
-                    setPlayers([{ id: newId, name: playerName, isHost: false }]);
-                    setIsOnline(true);
-                    setGameState('lobby');
-                    setIsJoiningRoom(false);
-                    setLoading(false);
-                }, 500);
+                
+                db.ref(`rooms/${onlineRoomCode}`).once('value').then(snap => {
+                    if (snap.exists()) {
+                        const data = snap.val();
+                        if (data.players.length >= data.maxPlayers) {
+                            alert('Room is full!');
+                            setLoading(false);
+                            setIsJoiningRoom(false);
+                            return;
+                        }
+                        
+                        const newId = Math.random().toString(36).substr(2, 9);
+                        const newPlayers = [...data.players, { id: newId, name: playerName, isHost: false }];
+                        
+                        db.ref(`rooms/${onlineRoomCode}`).update({ players: newPlayers }).then(() => {
+                            setPlayerId(newId);
+                            setIsHost(false);
+                            setIsOnline(true);
+                            setGameState('lobby');
+                            setScreen('lobby');
+                            setIsJoiningRoom(false);
+                            setLoading(false);
+                        });
+                    } else {
+                        alert('Room not found!');
+                        setLoading(false);
+                        setIsJoiningRoom(false);
+                    }
+                });
             };
 
             const handleStartGameSession = () => {
-                if (players.length < 2) {
-                    alert('Need at least 2 players to start');
-                    return;
+                if (players.length < 2) return;
+                const question = getRandomQuestion();
+                if (isOnline && db) {
+                    db.ref(`rooms/${onlineRoomCode}`).update({
+                        gameState: 'playing',
+                        currentQuestion: question,
+                        currentPlayerIdx: 0,
+                        revealed: false,
+                        coinResult: null
+                    });
+                } else {
+                    setCurrentQuestion(question);
+                    setCurrentPlayerIdx(0);
+                    setGameState('playing');
+                    setScreen('playing');
+                    setRevealed(false);
+                    setCoinResult(null);
                 }
-                setCurrentQuestion(getRandomQuestion());
-                setCurrentPlayerIdx(0);
-                setGameState('playing');
-                setRevealed(false);
-                setCoinResult(null);
             };
 
             const handleFlipCoin = () => {
-                setCoinFlipping(true);
-                setTimeout(() => {
-                    const result = Math.random() > 0.5 ? 'heads' : 'tails';
-                    setCoinResult(result);
-                    setCoinFlipping(false);
-                }, 600);
+                if (isOnline && db) {
+                    db.ref(`rooms/${onlineRoomCode}`).update({ coinFlipping: true });
+                    setTimeout(() => {
+                        const result = Math.random() > 0.5 ? 'heads' : 'tails';
+                        db.ref(`rooms/${onlineRoomCode}`).update({ 
+                            coinResult: result, 
+                            coinFlipping: false 
+                        });
+                    }, 600);
+                } else {
+                    setCoinFlipping(true);
+                    setTimeout(() => {
+                        const result = Math.random() > 0.5 ? 'heads' : 'tails';
+                        setCoinResult(result);
+                        setCoinFlipping(false);
+                    }, 600);
+                }
             };
 
             const handleNextRound = () => {
-                setCurrentQuestion(getRandomQuestion());
-                setCurrentPlayerIdx((prev) => (prev + 1) % players.length);
-                setRevealed(false);
-                setCoinResult(null);
+                const question = getRandomQuestion();
+                const nextIdx = (currentPlayerIdx + 1) % players.length;
+                if (isOnline && db) {
+                    db.ref(`rooms/${onlineRoomCode}`).update({
+                        currentQuestion: question,
+                        currentPlayerIdx: nextIdx,
+                        revealed: false,
+                        coinResult: null
+                    });
+                } else {
+                    setCurrentQuestion(question);
+                    setCurrentPlayerIdx(nextIdx);
+                    setRevealed(false);
+                    setCoinResult(null);
+                }
             };
+
+            const triggerReveal = () => {
+                if (isOnline && db) {
+                    db.ref(`rooms/${onlineRoomCode}`).update({ revealed: true });
+                } else {
+                    setRevealed(true);
+                }
+            }
 
             const handleBackToLanding = () => {
                 setScreen('landing');
@@ -366,31 +339,18 @@ function ParanoiaGame() {
                 setOnlineRoomCode('');
             };
 
-            // Render Screens
             if (screen === 'landing') {
                 return (
                     <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
                         <div>
-                            <h1 className="font-display text-6xl font-extrabold mb-3 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                                Paranoia
-                            </h1>
+                            <h1 className="font-display text-6xl font-extrabold mb-3 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Paranoia</h1>
                             <p className="text-zinc-400 text-lg">The Ultimate Party Game</p>
                         </div>
-
                         <div className="space-y-4 w-full max-w-xs">
-                            <button
-                                onClick={handleGoToModeSelect}
-                                disabled={loading}
-                                className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30"
-                                style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
-                            >
+                            <button onClick={handleGoToModeSelect} className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30" style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}>
                                 <Zap size={18} /> Play Game
                             </button>
                         </div>
-
-                        <p className="text-zinc-500 text-sm max-w-sm leading-relaxed">
-                            Play with friends online or locally. Ask anonymously, guess carefully, and prepare for the paranoia.
-                        </p>
                     </div>
                 );
             }
@@ -398,80 +358,16 @@ function ParanoiaGame() {
             if (screen === 'mode-select') {
                 return (
                     <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
-                        <h2 className="font-display text-4xl font-extrabold">Choose Game Mode</h2>
-                        
+                        <h2 className="font-display text-4xl font-extrabold">Choose Mode</h2>
                         <div className="space-y-4 w-full max-w-xs">
-                            <button
-                                onClick={() => handleSelectMode('local')}
-                                className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-purple-500/30"
-                                style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
-                            >
-                                <div className="text-2xl mb-2">🎮</div>
-                                Local Game
-                                <div className="text-xs text-purple-200 mt-1">Play with friends nearby</div>
+                            <button onClick={() => handleSelectMode('local')} className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-purple-500/30" style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}>
+                                <div className="text-2xl mb-2">🎮</div> Local Game
                             </button>
-                            <button
-                                onClick={() => handleSelectMode('online')}
-                                className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-cyan-500/30"
-                                style={{ background: "linear-gradient(135deg,#0e7490,#06b6d4)" }}
-                            >
-                                <div className="text-2xl mb-2">🌐</div>
-                                Online Game
-                                <div className="text-xs text-cyan-200 mt-1">Play with friends remotely</div>
+                            <button onClick={() => handleSelectMode('online')} className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-cyan-500/30" style={{ background: "linear-gradient(135deg,#0e7490,#06b6d4)" }}>
+                                <div className="text-2xl mb-2">🌐</div> Online Game
                             </button>
                         </div>
-
-                        <button
-                            onClick={handleBackToLanding}
-                            className="mt-4 text-zinc-400 hover:text-zinc-300 text-sm"
-                        >
-                            Back
-                        </button>
-                    </div>
-                );
-            }
-
-            // LOBBY - Show if in lobby state (check FIRST before setup forms)
-            if (gameState === 'lobby') {
-                return (
-                    <div className="flex flex-col min-h-screen px-6 pt-8 pb-8">
-                        <div className="mb-8">
-                            <h2 className="font-display text-3xl font-extrabold mb-2">Game Lobby</h2>
-                            {onlineRoomCode && (
-                                <div className="glass rounded-lg px-4 py-2 inline-flex items-center gap-2 text-sm text-cyan-400 border-zinc-800">
-                                    <span className="font-mono font-bold">{onlineRoomCode}</span>
-                                    <button onClick={() => navigator.clipboard.writeText(onlineRoomCode)} className="hover:text-cyan-300">
-                                        <Copy size={14} />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex-1">
-                            <h3 className="text-zinc-400 text-xs uppercase tracking-widest font-semibold mb-4">Players ({players.length}/{maxPlayers})</h3>
-                            <div className="space-y-2">
-                                {players.map((p) => (
-                                    <div key={p.id} className="glass rounded-lg px-4 py-3 flex items-center justify-between border-zinc-800">
-                                        <span className="text-white font-medium">{p.name}</span>
-                                        {p.isHost && <span className="text-xs bg-violet-950 text-violet-300 px-2 py-1 rounded border border-violet-800 font-semibold">HOST</span>}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {isHost && (
-                            <button
-                                onClick={handleStartGameSession}
-                                disabled={players.length < 2}
-                                className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30 disabled:opacity-50"
-                                style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}
-                            >
-                                <Zap size={16} /> Start Game
-                            </button>
-                        )}
-                        {!isHost && (
-                            <div className="text-center text-zinc-500 text-sm">Waiting for host to start...</div>
-                        )}
+                        <button onClick={handleBackToLanding} className="mt-4 text-zinc-400 hover:text-zinc-300 text-sm">Back</button>
                     </div>
                 );
             }
@@ -479,48 +375,25 @@ function ParanoiaGame() {
             if (screen === 'setup') {
                 if (gameMode === 'local') {
                     return (
-                        <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
-                            <h2 className="font-display text-4xl font-extrabold">Local Game Setup</h2>
-                            
+                        <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8 py-10">
+                            <h2 className="font-display text-4xl font-extrabold">Local Game</h2>
                             <div className="w-full max-w-xs space-y-4">
                                 <div>
-                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
-                                    <input
-                                        type="text"
-                                        value={playerName}
-                                        onChange={(e) => setPlayerName(e.target.value)}
-                                        placeholder="Enter your name"
-                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
-                                    />
+                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Total Players</label>
+                                    <input type="number" min="2" max="20" value={numPlayers} onChange={handleNumLocalPlayersChange} className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500 mb-4" />
                                 </div>
-
-                                <div>
-                                    <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Number of Players</label>
-                                    <input
-                                        type="number"
-                                        min="2"
-                                        max="20"
-                                        value={numPlayers}
-                                        onChange={(e) => setNumPlayers(Math.max(2, parseInt(e.target.value) || 2))}
-                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500"
-                                    />
+                                <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scroll">
+                                    {localPlayerNames.map((name, idx) => (
+                                        <div key={idx}>
+                                            <label className="text-zinc-500 text-xs uppercase tracking-widest font-semibold block mb-1 text-left">Player {idx + 1}</label>
+                                            <input type="text" value={name} onChange={(e) => handleLocalPlayerNameChange(idx, e.target.value)} placeholder={`Player ${idx + 1}`} className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-violet-500" />
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-
                             <div className="flex gap-4 w-full max-w-xs">
-                                <button
-                                    onClick={() => setScreen('mode-select')}
-                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
-                                >
-                                    Back
-                                </button>
-                                <button
-                                    onClick={handleStartLocalGame}
-                                    disabled={!playerName.trim() || loading}
-                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-violet-600 hover:bg-violet-500 transition-colors disabled:opacity-50"
-                                >
-                                    {loading ? 'Starting...' : 'Start Game'}
-                                </button>
+                                <button onClick={() => setScreen('mode-select')} className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors">Back</button>
+                                <button onClick={handleStartLocalGame} disabled={loading} className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-violet-600 hover:bg-violet-500 transition-colors disabled:opacity-50">Start Game</button>
                             </div>
                         </div>
                     );
@@ -530,34 +403,15 @@ function ParanoiaGame() {
                     return (
                         <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
                             <h2 className="font-display text-4xl font-extrabold">Online Game</h2>
-                            
                             <div className="space-y-4 w-full max-w-xs">
-                                <button
-                                    onClick={() => setGameMode('create-online')}
-                                    className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-cyan-500/30"
-                                    style={{ background: "linear-gradient(135deg,#0e7490,#06b6d4)" }}
-                                >
-                                    <div className="text-2xl mb-2">➕</div>
-                                    Create Room
-                                    <div className="text-xs text-cyan-200 mt-1">Get a code for friends to join</div>
+                                <button onClick={() => setGameMode('create-online')} className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-cyan-500/30" style={{ background: "linear-gradient(135deg,#0e7490,#06b6d4)" }}>
+                                    <div className="text-2xl mb-2">➕</div> Create Room
                                 </button>
-                                <button
-                                    onClick={() => setGameMode('join-online')}
-                                    className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-fuchsia-500/30"
-                                    style={{ background: "linear-gradient(135deg,#be185d,#7c3aed)" }}
-                                >
-                                    <div className="text-2xl mb-2">🔗</div>
-                                    Join Room
-                                    <div className="text-xs text-fuchsia-200 mt-1">Enter a room code to join friends</div>
+                                <button onClick={() => setGameMode('join-online')} className="w-full py-6 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all border border-fuchsia-500/30" style={{ background: "linear-gradient(135deg,#be185d,#7c3aed)" }}>
+                                    <div className="text-2xl mb-2">🔗</div> Join Room
                                 </button>
                             </div>
-
-                            <button
-                                onClick={() => setScreen('mode-select')}
-                                className="text-zinc-400 hover:text-zinc-300 text-sm"
-                            >
-                                Back
-                            </button>
+                            <button onClick={() => setScreen('mode-select')} className="text-zinc-400 hover:text-zinc-300 text-sm">Back</button>
                         </div>
                     );
                 }
@@ -565,47 +419,20 @@ function ParanoiaGame() {
                 if (gameMode === 'create-online') {
                     return (
                         <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
-                            <h2 className="font-display text-4xl font-extrabold">Create Online Room</h2>
-                            
+                            <h2 className="font-display text-4xl font-extrabold">Create Room</h2>
                             <div className="w-full max-w-xs space-y-4">
                                 <div>
                                     <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
-                                    <input
-                                        type="text"
-                                        value={playerName}
-                                        onChange={(e) => setPlayerName(e.target.value)}
-                                        placeholder="Enter your name"
-                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-cyan-500"
-                                    />
+                                    <input type="text" value={playerName} onChange={(e) => setPlayerName(e.target.value)} className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-cyan-500" />
                                 </div>
-
                                 <div>
                                     <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Max Players</label>
-                                    <input
-                                        type="number"
-                                        min="2"
-                                        max="20"
-                                        value={numPlayers}
-                                        onChange={(e) => setNumPlayers(Math.max(2, parseInt(e.target.value) || 2))}
-                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-cyan-500"
-                                    />
+                                    <input type="number" min="2" max="20" value={numPlayers} onChange={(e) => setNumPlayers(Math.max(2, parseInt(e.target.value) || 2))} className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-cyan-500" />
                                 </div>
                             </div>
-
                             <div className="flex gap-4 w-full max-w-xs">
-                                <button
-                                    onClick={() => setGameMode('online')}
-                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
-                                >
-                                    Back
-                                </button>
-                                <button
-                                    onClick={handleCreateOnlineGame}
-                                    disabled={!playerName.trim() || loading}
-                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-cyan-600 hover:bg-cyan-500 transition-colors disabled:opacity-50"
-                                >
-                                    {loading ? 'Creating...' : 'Create'}
-                                </button>
+                                <button onClick={() => setGameMode('online')} className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors">Back</button>
+                                <button onClick={handleCreateOnlineGame} disabled={!playerName.trim() || loading} className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50">Create</button>
                             </div>
                         </div>
                     );
@@ -614,68 +441,79 @@ function ParanoiaGame() {
                 if (gameMode === 'join-online') {
                     return (
                         <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center space-y-8">
-                            <h2 className="font-display text-4xl font-extrabold">Join Online Room</h2>
-                            
+                            <h2 className="font-display text-4xl font-extrabold">Join Room</h2>
                             <div className="w-full max-w-xs space-y-4">
                                 <div>
                                     <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Your Name</label>
-                                    <input
-                                        type="text"
-                                        value={playerName}
-                                        onChange={(e) => setPlayerName(e.target.value)}
-                                        placeholder="Enter your name"
-                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-fuchsia-500"
-                                    />
+                                    <input type="text" value={playerName} onChange={(e) => setPlayerName(e.target.value)} className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white focus:outline-none focus:border-fuchsia-500" />
                                 </div>
-
                                 <div>
                                     <label className="text-zinc-400 text-sm uppercase tracking-widest font-semibold block mb-2">Room Code</label>
-                                    <input
-                                        type="text"
-                                        value={onlineRoomCode}
-                                        onChange={(e) => setOnlineRoomCode(e.target.value.toUpperCase())}
-                                        placeholder="e.g., ABC123"
-                                        maxLength="6"
-                                        className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-center text-lg font-bold focus:outline-none focus:border-fuchsia-500 tracking-widest"
-                                    />
+                                    <input type="text" value={onlineRoomCode} onChange={(e) => setOnlineRoomCode(e.target.value.toUpperCase())} maxLength="6" className="w-full px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-center text-lg font-bold focus:outline-none focus:border-fuchsia-500 tracking-widest" />
                                 </div>
                             </div>
-
                             <div className="flex gap-4 w-full max-w-xs">
-                                <button
-                                    onClick={() => setGameMode('online')}
-                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700 transition-colors"
-                                >
-                                    Back
-                                </button>
-                                <button
-                                    onClick={handleJoinOnlineGame}
-                                    disabled={!playerName.trim() || !onlineRoomCode.trim() || isJoiningRoom || loading}
-                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-fuchsia-600 hover:bg-fuchsia-500 transition-colors disabled:opacity-50"
-                                >
-                                    {loading ? 'Joining...' : 'Join'}
-                                </button>
+                                <button onClick={() => setGameMode('online')} className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-zinc-800 hover:bg-zinc-700">Back</button>
+                                <button onClick={handleJoinOnlineGame} disabled={!playerName.trim() || !onlineRoomCode.trim() || loading} className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-50">Join</button>
                             </div>
                         </div>
                     );
                 }
             }
 
-            if (gameState === 'playing') {
+            if (screen === 'lobby') {
+                return (
+                    <div className="flex flex-col min-h-screen px-6 pt-8 pb-8">
+                        <div className="mb-8">
+                            <h2 className="font-display text-3xl font-extrabold mb-2">Game Lobby</h2>
+                            {onlineRoomCode && (
+                                <div className="glass rounded-lg px-4 py-2 inline-flex items-center gap-2 text-sm text-cyan-400 border-zinc-800">
+                                    <span className="font-mono font-bold">{onlineRoomCode}</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-zinc-400 text-xs uppercase tracking-widest font-semibold mb-4">Players ({players.length}/{isOnline ? maxPlayers : players.length})</h3>
+                            <div className="space-y-2">
+                                {players.map((p) => (
+                                    <div key={p.id} className="glass rounded-lg px-4 py-3 flex items-center justify-between border-zinc-800">
+                                        <span className="text-white font-medium">{p.name}</span>
+                                        {p.isHost && <span className="text-xs bg-violet-950 text-violet-300 px-2 py-1 rounded border border-violet-800 font-semibold">HOST</span>}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {isHost ? (
+                            <button onClick={handleStartGameSession} disabled={players.length < 2} className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-violet-500/30 disabled:opacity-50" style={{ background: "linear-gradient(135deg,#6d28d9,#7c3aed)" }}>
+                                <Zap size={16} /> Start Game
+                            </button>
+                        ) : (
+                            <div className="text-center text-zinc-500 text-sm">Waiting for host to start...</div>
+                        )}
+                    </div>
+                );
+            }
+
+            if (screen === 'playing') {
+                const activePlayer = players[currentPlayerIdx];
+                const isMyTurn = !isOnline || playerId === activePlayer?.id;
+                const isHostOnlyForNext = !isOnline || isHost;
+
                 if (!coinResult) {
                     return (
                         <>
                             {!coinFlipping ? (
                                 <SecretQuestionScreen
-                                    asker={players[currentPlayerIdx]?.name || 'Unknown'}
+                                    asker={activePlayer?.name || 'Unknown'}
                                     question={currentQuestion}
-                                    others={players.map(p => p.name).filter((_, i) => i !== currentPlayerIdx)}
+                                    others={players.map(p => p.name).filter(name => name !== activePlayer?.name)}
                                     onFlip={handleFlipCoin}
                                     revealed={revealed}
-                                    setRevealed={setRevealed}
+                                    setRevealed={triggerReveal}
+                                    isMyTurn={isMyTurn}
                                 />
                             ) : (
-                                <CoinScreen flipping={coinFlipping} onFlip={handleFlipCoin} />
+                                <CoinScreen flipping={coinFlipping} onFlip={isMyTurn ? handleFlipCoin : undefined} isMyTurn={isMyTurn} />
                             )}
                         </>
                     );
@@ -684,15 +522,27 @@ function ParanoiaGame() {
                         <ResultScreen
                             coinResult={coinResult}
                             question={currentQuestion}
-                            asker={players[currentPlayerIdx]?.name || 'Unknown'}
+                            asker={activePlayer?.name || 'Unknown'}
                             onNext={handleNextRound}
+                            canClickNext={isHostOnlyForNext}
                         />
                     );
                 }
             }
         }
 
-        function SecretQuestionScreen({ asker, question, others, onFlip, revealed, setRevealed }) {
+        function SecretQuestionScreen({ asker, question, others, onFlip, revealed, setRevealed, isMyTurn }) {
+          if (!isMyTurn) {
+              return (
+                  <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+                     <p className="text-zinc-500 text-sm uppercase tracking-widest font-semibold mb-4">Waiting on...</p>
+                     <h2 className="font-display text-4xl font-extrabold text-violet-400 mb-8">{asker}</h2>
+                     <p className="text-zinc-400 text-sm max-w-xs leading-relaxed">They are reading their secret question and picking someone from the group.</p>
+                     <div className="mt-8 animate-pulse text-zinc-600"><EyeOff size={32} className="mx-auto" /></div>
+                  </div>
+              )
+          }
+
           return (
             <div className="flex flex-col min-h-screen px-6 pt-12 pb-8">
               <div className="glass rounded-xl px-4 py-2 mb-6 self-start flex items-center gap-2 text-xs text-violet-400 border-zinc-800 font-semibold uppercase tracking-widest">
@@ -739,7 +589,7 @@ function ParanoiaGame() {
           );
         }
 
-        function CoinScreen({ flipping, onFlip }) {
+        function CoinScreen({ flipping, onFlip, isMyTurn }) {
           return (
             <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
               <p className="text-zinc-500 text-sm mb-2 uppercase tracking-widest font-semibold">The moment of truth</p>
@@ -747,25 +597,26 @@ function ParanoiaGame() {
                 Heads = <span className="text-cyan-400">Reveal</span><br />
                 Tails = <span className="text-fuchsia-400">Secret</span>
               </h2>
-              <div onClick={!flipping ? onFlip : undefined}
-                className={`w-44 h-44 rounded-full cursor-pointer select-none mb-10 ${flipping ? "spin-coin" : "active:scale-95"} transition-transform`}
+              <div onClick={!flipping && isMyTurn ? onFlip : undefined}
+                className={`w-44 h-44 rounded-full select-none mb-10 ${isMyTurn && !flipping ? "cursor-pointer active:scale-95" : ""} ${flipping ? "spin-coin" : ""} transition-transform`}
                 style={{ background:"linear-gradient(145deg,#d97706,#b45309,#d97706)", boxShadow:"0 0 0 6px rgba(217,119,6,0.1), 0 20px 60px rgba(217,119,6,0.15), inset 0 2px 4px rgba(255,255,255,0.2), inset 0 -4px 6px rgba(0,0,0,0.4)" }}
               >
                 <div className="w-full h-full rounded-full flex items-center justify-center">
                   <span className="font-display text-5xl font-extrabold text-amber-950/80">?</span>
                 </div>
               </div>
-              {!flipping && (
+              {!flipping && isMyTurn && (
                 <button onClick={onFlip} className="glass-strong px-8 py-3.5 rounded-2xl font-display font-bold uppercase tracking-widest text-sm active:scale-95 transition-all text-amber-400 border-zinc-700">
                   Flip It!
                 </button>
               )}
               {flipping && <p className="text-zinc-500 text-sm animate-pulse">Flipping…</p>}
+              {!flipping && !isMyTurn && <p className="text-zinc-500 text-sm mt-4">Waiting for them to flip...</p>}
             </div>
           );
         }
 
-        function ResultScreen({ coinResult, question, asker, onNext }) {
+        function ResultScreen({ coinResult, question, asker, onNext, canClickNext }) {
           const isHeads = coinResult === "heads";
           return (
             <div className="flex flex-col items-center min-h-screen px-5 pt-14 pb-8 text-center">
@@ -796,12 +647,16 @@ function ParanoiaGame() {
                 </div>
               )}
               <div className="mt-auto w-full">
-                <button onClick={onNext}
-                  className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-purple-500/30"
-                  style={{ background: "linear-gradient(135deg,#6d28d9,#be185d)" }}
-                >
-                  Next Round <ChevronRight size={16} />
-                </button>
+                {canClickNext ? (
+                  <button onClick={onNext}
+                    className="w-full py-4 rounded-2xl font-display font-bold text-base uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 border border-purple-500/30"
+                    style={{ background: "linear-gradient(135deg,#6d28d9,#be185d)" }}
+                  >
+                    Next Round <ChevronRight size={16} />
+                  </button>
+                ) : (
+                  <p className="text-zinc-500 text-sm">Waiting for the host to start the next round...</p>
+                )}
               </div>
             </div>
           );
