@@ -334,10 +334,68 @@
             const [isOnline, setIsOnline] = React.useState(false);
             const [maxPlayers, setMaxPlayers] = React.useState(4);
             const [fadeOut, setFadeOut] = React.useState(false);
+            const roomRefRef = React.useRef(null);
+            const [syncError, setSyncError] = React.useState(null);
 
             React.useEffect(() => {
                 initializeFirebase();
             }, []);
+
+            // Firebase sync for multiplayer
+            React.useEffect(() => {
+                if (!isOnline || !onlineRoomCode) return;
+
+                if (!db) {
+                    console.error("Firebase not initialized");
+                    setSyncError("Connection failed. Using local mode.");
+                    return;
+                }
+
+                const roomRef = db.ref(`rooms/${onlineRoomCode}`);
+                roomRefRef.current = roomRef;
+
+                // Listen to room changes
+                const unsubscribe = roomRef.on('value', (snapshot) => {
+                    const roomData = snapshot.val();
+                    if (roomData && roomData.players) {
+                        setPlayers(Object.values(roomData.players));
+                        if (roomData.gameState) {
+                            setGameState(roomData.gameState);
+                            setCurrentPlayerIdx(roomData.currentPlayerIdx || 0);
+                            setCurrentQuestion(roomData.currentQuestion || '');
+                            setCoinResult(roomData.coinResult || null);
+                            setCoinFlipping(roomData.coinFlipping || false);
+                        }
+                    }
+                }, (error) => {
+                    console.warn("Firebase sync error:", error.message);
+                    setSyncError("Sync paused - check connection");
+                });
+
+                return () => {
+                    roomRef.off('value', unsubscribe);
+                };
+            }, [isOnline, onlineRoomCode]);
+
+            // Update room data when state changes
+            const updateRoomData = (updates) => {
+                if (!isOnline || !onlineRoomCode || !db) return;
+                const roomRef = db.ref(`rooms/${onlineRoomCode}`);
+                roomRef.update(updates).catch(err => {
+                    console.warn("Update failed:", err.message);
+                });
+            };
+
+            // Sync players when local players change
+            React.useEffect(() => {
+                if (isOnline && onlineRoomCode && players.length > 0) {
+                    const playersObj = {};
+                    players.forEach((p, idx) => {
+                        playersObj[p.id] = p;
+                    });
+                    updateRoomData({ players: playersObj });
+                }
+            }, [players, isOnline, onlineRoomCode]);
 
             const getRandomQuestion = () => {
                 const allQuestions = Object.values(QUESTIONS).flat();
@@ -373,18 +431,59 @@
             const handleCreateOnlineGame = () => {
                 if (!playerName.trim()) return;
                 setLoading(true);
-                setTimeout(() => {
-                    const code = generateRoomCode();
-                    const newId = Math.random().toString(36).substr(2, 9);
-                    setOnlineRoomCode(code);
-                    setPlayerId(newId);
-                    setIsHost(true);
-                    setPlayers([{ id: newId, name: playerName, isHost: true }]);
-                    setIsOnline(true);
-                    setMaxPlayers(numPlayers);
-                    setGameState('lobby');
-                    setLoading(false);
-                }, 500);
+                
+                const code = generateRoomCode();
+                const newId = Math.random().toString(36).substr(2, 9);
+                const timestamp = Date.now();
+                
+                if (db) {
+                    const roomRef = db.ref(`rooms/${code}`);
+                    const initialData = {
+                        code: code,
+                        hostId: newId,
+                        maxPlayers: numPlayers,
+                        createdAt: timestamp,
+                        gameState: 'lobby',
+                        players: {
+                            [newId]: {
+                                id: newId,
+                                name: playerName,
+                                isHost: true
+                            }
+                        }
+                    };
+                    
+                    roomRef.set(initialData).then(() => {
+                        setTimeout(() => {
+                            setOnlineRoomCode(code);
+                            setPlayerId(newId);
+                            setIsHost(true);
+                            setPlayers([{ id: newId, name: playerName, isHost: true }]);
+                            setIsOnline(true);
+                            setMaxPlayers(numPlayers);
+                            setGameState('lobby');
+                            setLoading(false);
+                            setSyncError(null);
+                        }, 300);
+                    }).catch(err => {
+                        console.error("Failed to create room:", err);
+                        alert("Failed to create room. Check your connection.");
+                        setLoading(false);
+                    });
+                } else {
+                    // Fallback to local mode
+                    setTimeout(() => {
+                        setOnlineRoomCode(code);
+                        setPlayerId(newId);
+                        setIsHost(true);
+                        setPlayers([{ id: newId, name: playerName, isHost: true }]);
+                        setIsOnline(true);
+                        setMaxPlayers(numPlayers);
+                        setGameState('lobby');
+                        setLoading(false);
+                        setSyncError("Running in local mode - invite friends manually");
+                    }, 500);
+                }
             };
 
             const handleJoinOnlineGame = () => {
@@ -393,15 +492,62 @@
                     return;
                 }
                 setLoading(true);
-                setTimeout(() => {
-                    const newId = Math.random().toString(36).substr(2, 9);
-                    setPlayerId(newId);
-                    setIsHost(false);
-                    setPlayers(prev => [...prev, { id: newId, name: playerName, isHost: false }]);
-                    setIsOnline(true);
-                    setGameState('lobby');
+                
+                if (db) {
+                    const roomRef = db.ref(`rooms/${onlineRoomCode.trim()}`);
+                    roomRef.get().then((snapshot) => {
+                        if (!snapshot.exists()) {
+                            alert('Room not found. Check the code and try again.');
+                            setLoading(false);
+                            return;
+                        }
+
+                        const roomData = snapshot.val();
+                        const currentPlayers = Object.values(roomData.players || {});
+
+                        if (currentPlayers.length >= roomData.maxPlayers) {
+                            alert('Room is full!');
+                            setLoading(false);
+                            return;
+                        }
+
+                        const newId = Math.random().toString(36).substr(2, 9);
+                        const newPlayer = {
+                            id: newId,
+                            name: playerName,
+                            isHost: false
+                        };
+
+                        // Add new player to room
+                        roomRef.update({
+                            [`players/${newId}`]: newPlayer
+                        }).then(() => {
+                            setTimeout(() => {
+                                setOnlineRoomCode(onlineRoomCode.trim());
+                                setPlayerId(newId);
+                                setIsHost(false);
+                                setPlayers([...currentPlayers, newPlayer]);
+                                setIsOnline(true);
+                                setMaxPlayers(roomData.maxPlayers);
+                                setGameState('lobby');
+                                setLoading(false);
+                                setSyncError(null);
+                            }, 300);
+                        }).catch(err => {
+                            console.error("Failed to join room:", err);
+                            alert("Failed to join room. Try again.");
+                            setLoading(false);
+                        });
+                    }).catch(err => {
+                        console.error("Failed to get room:", err);
+                        alert("Connection error. Check internet and try again.");
+                        setLoading(false);
+                    });
+                } else {
+                    // Fallback to local mode
+                    alert("Firebase not connected. Room codes won't work.");
                     setLoading(false);
-                }, 500);
+                }
             };
 
             const handleStartGameSession = () => {
@@ -409,30 +555,76 @@
                     alert('Need at least 2 players to start');
                     return;
                 }
-                setCurrentQuestion(getRandomQuestion());
+                const question = getRandomQuestion();
+                setCurrentQuestion(question);
                 setCurrentPlayerIdx(0);
                 setGameState('playing');
                 setRevealed(false);
                 setCoinResult(null);
+                
+                if (isOnline && onlineRoomCode) {
+                    updateRoomData({
+                        gameState: 'playing',
+                        currentQuestion: question,
+                        currentPlayerIdx: 0
+                    });
+                }
             };
 
             const handleFlipCoin = () => {
                 setCoinFlipping(true);
+                if (isOnline && onlineRoomCode) {
+                    updateRoomData({ coinFlipping: true });
+                }
                 setTimeout(() => {
                     const result = Math.random() > 0.5 ? 'heads' : 'tails';
                     setCoinResult(result);
                     setCoinFlipping(false);
+                    if (isOnline && onlineRoomCode) {
+                        updateRoomData({ 
+                            coinFlipping: false,
+                            coinResult: result
+                        });
+                    }
                 }, 1000);
             };
 
             const handleNextRound = () => {
-                setCurrentQuestion(getRandomQuestion());
-                setCurrentPlayerIdx((prev) => (prev + 1) % players.length);
+                const question = getRandomQuestion();
+                const nextIdx = (currentPlayerIdx + 1) % players.length;
+                setCurrentQuestion(question);
+                setCurrentPlayerIdx(nextIdx);
                 setRevealed(false);
                 setCoinResult(null);
+                
+                if (isOnline && onlineRoomCode) {
+                    updateRoomData({
+                        currentQuestion: question,
+                        currentPlayerIdx: nextIdx,
+                        coinResult: null
+                    });
+                }
             };
 
             const handleBackToLanding = () => {
+                // Remove player from room when leaving
+                if (isOnline && onlineRoomCode && playerId && db) {
+                    const roomRef = db.ref(`rooms/${onlineRoomCode}`);
+                    roomRef.get().then((snapshot) => {
+                        const roomData = snapshot.val();
+                        if (roomData) {
+                            roomRef.update({
+                                [`players/${playerId}`]: null
+                            }).catch(err => console.warn("Couldn't remove player:", err.message));
+                        }
+                    });
+                }
+
+                // Cleanup
+                if (roomRefRef.current) {
+                    roomRefRef.current.off();
+                }
+
                 navigateTo('landing');
                 setGameMode(null);
                 setGameState('setup');
@@ -445,6 +637,7 @@
                 setCoinFlipping(false);
                 setCoinResult(null);
                 setOnlineRoomCode('');
+                setSyncError(null);
             };
 
             const containerClass = fadeOut ? 'opacity-0 transition-opacity duration-200' : 'opacity-100 transition-opacity duration-300 page-enter';
@@ -774,13 +967,25 @@
                             <div className="mb-8">
                                 <h2 className="font-display text-3xl font-extrabold mb-2">Game Lobby</h2>
                                 {onlineRoomCode && (
-                                    <div className="glass rounded-lg px-4 py-2 inline-flex items-center gap-2 text-sm text-cyan-400 border-zinc-800 badge-pulse">
-                                        <span className="font-mono font-bold text-lg">{onlineRoomCode}</span>
-                                        <button onClick={() => {
-                                            navigator.clipboard.writeText(onlineRoomCode);
-                                        }} className="hover:text-cyan-300 transition-colors">
-                                            <Copy size={14} />
-                                        </button>
+                                    <div>
+                                        <div className="glass rounded-lg px-4 py-2 inline-flex items-center gap-2 text-sm text-cyan-400 border-zinc-800 badge-pulse">
+                                            <span className="font-mono font-bold text-lg">{onlineRoomCode}</span>
+                                            <button onClick={() => {
+                                                navigator.clipboard.writeText(onlineRoomCode);
+                                            }} className="hover:text-cyan-300 transition-colors">
+                                                <Copy size={14} />
+                                            </button>
+                                        </div>
+                                        {syncError && (
+                                            <div className="mt-2 text-xs text-yellow-600 bg-yellow-950/40 border border-yellow-800 rounded px-3 py-2">
+                                                ⚠️ {syncError}
+                                            </div>
+                                        )}
+                                        {!syncError && (
+                                            <div className="mt-2 text-xs text-green-600 bg-green-950/40 border border-green-800 rounded px-3 py-2">
+                                                ✓ Connected - players syncing live
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -788,14 +993,18 @@
                             <div className="flex-1">
                                 <h3 className="text-zinc-400 text-xs uppercase tracking-widest font-semibold mb-4">Players ({players.length}/{maxPlayers})</h3>
                                 <div className="space-y-2">
-                                    {players.map((p, idx) => (
-                                        <StaggerItem key={p.id} index={idx}>
-                                            <div className="glass player-card rounded-lg px-4 py-3 flex items-center justify-between border-zinc-800">
-                                                <span className="text-white font-medium">{p.name}</span>
-                                                {p.isHost && <span className="text-xs bg-violet-950 text-violet-300 px-3 py-1 rounded border border-violet-800 font-semibold">HOST</span>}
-                                            </div>
-                                        </StaggerItem>
-                                    ))}
+                                    {players.length === 0 ? (
+                                        <div className="text-zinc-500 text-sm py-4 text-center">Waiting for players...</div>
+                                    ) : (
+                                        players.map((p, idx) => (
+                                            <StaggerItem key={p.id} index={idx}>
+                                                <div className="glass player-card rounded-lg px-4 py-3 flex items-center justify-between border-zinc-800">
+                                                    <span className="text-white font-medium">{p.name}</span>
+                                                    {p.isHost && <span className="text-xs bg-violet-950 text-violet-300 px-3 py-1 rounded border border-violet-800 font-semibold">HOST</span>}
+                                                </div>
+                                            </StaggerItem>
+                                        ))
+                                    )}
                                 </div>
                             </div>
 
