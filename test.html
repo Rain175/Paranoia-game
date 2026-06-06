@@ -134,6 +134,20 @@
                 "Who is most likely to start drama?",
                 "Who would be the worst person to keep a secret with?",
             ],
+            adult: [
+                "Who would you most want to see in a reality dating show?",
+                "Who has the worst taste in romantic partners?",
+                "Who do you think has been on the most dates?",
+                "Who's most likely to get drunk and cry about their ex?",
+                "Who would be most likely to message an ex at 2am?",
+                "Who's the biggest player in this group?",
+                "Who would be most likely to have an embarrassing dating story?",
+                "Who's most likely to fall in love too quickly?",
+                "Who would make the worst kisser?",
+                "Who's most likely to ghost someone?",
+                "Who would be the worst person to bring home to your parents?",
+                "Who's most likely to send a risky text to the wrong person?",
+            ],
         };
 
         // Simple Firebase wrapper
@@ -218,6 +232,7 @@
             const [firebaseStatus, setFirebaseStatus] = React.useState('loading');
             const [selectedCategories, setSelectedCategories] = React.useState(['icebreaker', 'funny', 'devious']);
             const roomRefRef = React.useRef(null);
+            const reconnectingRef = React.useRef(false);
 
             React.useEffect(() => {
                 waitForFirebase().then(() => {
@@ -236,13 +251,17 @@
                 const onValue = (snapshot) => {
                     const roomData = snapshot.val();
                     if (roomData && roomData.players) {
-                        const playerList = Object.values(roomData.players).filter(p => p !== null);
-                        setPlayers(playerList);
-                        if (roomData.gameState) {
-                            setGameState(roomData.gameState);
-                            setCurrentPlayerIdx(roomData.currentPlayerIdx || 0);
-                            setCoinResult(roomData.coinResult || null);
-                            setCoinFlipping(roomData.coinFlipping || false);
+                        const playersList = Object.values(roomData.players).filter(p => p !== null);
+                        setPlayers(playersList);
+                        
+                        // Sync game state
+                        if (roomData.gameState) setGameState(roomData.gameState);
+                        if (roomData.currentPlayerIdx !== undefined) setCurrentPlayerIdx(roomData.currentPlayerIdx);
+                        if (roomData.currentQuestion) setCurrentQuestion(roomData.currentQuestion);
+                        if (roomData.coinFlipping !== undefined) setCoinFlipping(roomData.coinFlipping);
+                        if (roomData.coinResult) setCoinResult(roomData.coinResult);
+                        if (roomData.selectedCategories) {
+                            setSelectedCategories(roomData.selectedCategories);
                         }
                     }
                 };
@@ -308,10 +327,11 @@
                     hostId: newId,
                     maxPlayers: numPlayers,
                     createdAt: timestamp,
-                    gameState: 'lobby',
+                    gameState: 'category-select',
                     players: {
                         [newId]: { id: newId, name: playerName, isHost: true }
-                    }
+                    },
+                    selectedCategories: ['icebreaker', 'funny', 'devious']
                 };
                 
                 db.ref(`rooms/${code}`).set(initialData).then(() => {
@@ -324,6 +344,7 @@
                         setIsOnline(true);
                         setMaxPlayers(numPlayers);
                         setGameState('category-select');
+                        setSelectedCategories(['icebreaker', 'funny', 'devious']);
                         setLoading(false);
                     }, 300);
                 }).catch(err => {
@@ -373,7 +394,20 @@
                             setPlayers([...currentPlayers, newPlayer]);
                             setIsOnline(true);
                             setMaxPlayers(roomData.maxPlayers);
-                            setGameState('lobby');
+                            // Set game state based on room state
+                            setGameState(roomData.gameState || 'category-select');
+                            if (roomData.selectedCategories) {
+                                setSelectedCategories(roomData.selectedCategories);
+                            }
+                            if (roomData.currentQuestion) {
+                                setCurrentQuestion(roomData.currentQuestion);
+                            }
+                            if (roomData.currentPlayerIdx !== undefined) {
+                                setCurrentPlayerIdx(roomData.currentPlayerIdx);
+                            }
+                            if (roomData.coinResult) {
+                                setCoinResult(roomData.coinResult);
+                            }
                             setLoading(false);
                         }, 300);
                     }).catch(err => {
@@ -398,11 +432,15 @@
                 setCurrentPlayerIdx(0);
                 setGameState('playing');
                 setCoinResult(null);
+                setRevealed(false);
                 
                 if (isOnline && onlineRoomCode) {
                     updateRoomData({
                         gameState: 'playing',
-                        currentPlayerIdx: 0
+                        currentPlayerIdx: 0,
+                        currentQuestion: question,
+                        coinResult: null,
+                        coinFlipping: false
                     });
                 }
             };
@@ -429,11 +467,14 @@
                 setCurrentPlayerIdx(nextIdx);
                 setRevealed(false);
                 setCoinResult(null);
+                setCoinFlipping(false);
                 
                 if (isOnline && onlineRoomCode) {
                     updateRoomData({
                         currentPlayerIdx: nextIdx,
-                        coinResult: null
+                        currentQuestion: question,
+                        coinResult: null,
+                        coinFlipping: false
                     });
                 }
             };
@@ -453,6 +494,8 @@
                 setPlayerNames([]);
                 setOnlineRoomCode('');
                 setCoinResult(null);
+                setCurrentQuestion('');
+                setSelectedCategories(['icebreaker', 'funny', 'devious']);
             };
 
             const containerClass = fadeOut ? 'opacity-0 transition-opacity duration-200' : 'opacity-100 transition-opacity duration-300 page-enter';
@@ -604,7 +647,20 @@
                     { id: 'icebreaker', name: '😊 Icebreaker', description: 'Friendly & fun questions', color: 'violet' },
                     { id: 'funny', name: '😂 Funny', description: 'Hilarious moments', color: 'cyan' },
                     { id: 'devious', name: '😈 Devious', description: 'Spicy & scandalous', color: 'pink' },
+                    { id: 'adult', name: '🔥 18+', description: 'For mature audiences only', color: 'red' },
                 ];
+
+                const handleCategoryToggle = (catId) => {
+                    const newCategories = selectedCategories.includes(catId)
+                        ? selectedCategories.filter(c => c !== catId)
+                        : [...selectedCategories, catId];
+                    setSelectedCategories(newCategories);
+                    
+                    // Sync to Firebase if online
+                    if (isOnline && onlineRoomCode && isHost) {
+                        updateRoomData({ selectedCategories: newCategories });
+                    }
+                };
 
                 return (
                     <div className={containerClass}>
@@ -618,16 +674,11 @@
                                 {categories.map((cat, idx) => (
                                     <StaggerItem key={cat.id} index={idx}>
                                         <button
-                                            onClick={() => {
-                                                setSelectedCategories(prev => 
-                                                    prev.includes(cat.id) 
-                                                        ? prev.filter(c => c !== cat.id)
-                                                        : [...prev, cat.id]
-                                                );
-                                            }}
-                                            className={`w-full py-4 rounded-xl border-2 transition-all text-left font-display font-bold uppercase tracking-widest ${
+                                            onClick={() => handleCategoryToggle(cat.id)}
+                                            disabled={!isHost && isOnline}
+                                            className={`w-full py-4 rounded-xl border-2 transition-all text-left font-display font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed ${
                                                 selectedCategories.includes(cat.id)
-                                                    ? cat.color === 'violet' ? 'border-violet-500 bg-violet-950/50' : cat.color === 'cyan' ? 'border-cyan-500 bg-cyan-950/50' : 'border-pink-500 bg-pink-950/50'
+                                                    ? cat.color === 'violet' ? 'border-violet-500 bg-violet-950/50' : cat.color === 'cyan' ? 'border-cyan-500 bg-cyan-950/50' : cat.color === 'pink' ? 'border-pink-500 bg-pink-950/50' : 'border-red-500 bg-red-950/50'
                                                     : 'border-zinc-700 bg-zinc-900/30'
                                             }`}
                                         >
@@ -638,7 +689,7 @@
                                                 </div>
                                                 <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
                                                     selectedCategories.includes(cat.id)
-                                                        ? cat.color === 'violet' ? 'bg-violet-500 border-violet-500' : cat.color === 'cyan' ? 'bg-cyan-500 border-cyan-500' : 'bg-pink-500 border-pink-500'
+                                                        ? cat.color === 'violet' ? 'bg-violet-500 border-violet-500' : cat.color === 'cyan' ? 'bg-cyan-500 border-cyan-500' : cat.color === 'pink' ? 'bg-pink-500 border-pink-500' : 'bg-red-500 border-red-500'
                                                         : 'border-zinc-600'
                                                 }`}>
                                                     {selectedCategories.includes(cat.id) && <Check size={14} className="text-white" />}
@@ -667,9 +718,13 @@
                                             alert('Please select at least one category');
                                             return;
                                         }
+                                        if (isOnline && onlineRoomCode && isHost) {
+                                            updateRoomData({ selectedCategories: selectedCategories, gameState: 'lobby' });
+                                        }
                                         setGameState('lobby');
                                     }}
-                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-purple-600 hover:bg-purple-500 transition-colors flex items-center justify-center gap-2"
+                                    disabled={!isHost && isOnline}
+                                    className="flex-1 py-3 rounded-lg font-display font-bold uppercase tracking-widest text-sm bg-purple-600 hover:bg-purple-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     Continue <ChevronRight size={14} />
                                 </button>
