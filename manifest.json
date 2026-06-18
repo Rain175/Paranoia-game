@@ -7,7 +7,7 @@
   "background_color": "#0a0a0c",
   "theme_color": "#0a0a0c",
   "scope": "/",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%236d28d9' width='192' height='192'/><text x='96' y='140' font-size='140' fill='white' text-anchor='middle' font-weight='bold'>?</text></svg>",
