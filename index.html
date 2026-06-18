@@ -12,13 +12,9 @@
     
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <script>
-        Babel.registerPreset('react-classic', {
-            presets: [
-                [Babel.availablePresets.react, { "runtime": "classic" }]
-            ]
-        });
-    </script>
+  <script type="text/babel" data-presets="react" data-plugins='[{"runtime": "classic"}]'>
+    // ... all your existing JavaScript code goes here ...
+</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
