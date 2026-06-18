@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paranoia - The Ultimate Party Game</title>
     
-    <!-- PWA Setup with inline manifest -->
+    <!-- PWA Setup - Simple Manifest -->
     <meta name="theme-color" content="#0a0a0c">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Paranoia%20-%20The%20Ultimate%20Party%20Game%22,%22short_name%22:%22Paranoia%22,%22description%22:%22The%20party%20game%20where%20friends%20reveal%20secrets%22,%22start_url%22:%22/%22,%22scope%22:%22/%22,%22display%22:%22standalone%22,%22orientation%22:%22portrait-or-landscape%22,%22background_color%22:%22%230a0a0c%22,%22theme_color%22:%22%230a0a0c%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20192%20192%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27grad%27%20x1=%270%25%27%20y1=%270%25%27%20x2=%27100%25%27%20y2=%27100%25%27%3E%3Cstop%20offset=%270%25%27%20style=%27stop-color:%230e7490;stop-opacity:1%27%20/%3E%3Cstop%20offset=%2750%25%27%20style=%27stop-color:%236d28d9;stop-opacity:1%27%20/%3E%3Cstop%20offset=%27100%25%27%20style=%27stop-color:%23be185d;stop-opacity:1%27%20/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20fill=%27url(%23grad)%27%20width=%27192%27%20height=%27192%27/%3E%3Ctext%20x=%2750%25%27%20y=%2750%25%27%20font-size=%2780%27%20fill=%27white%27%20text-anchor=%27middle%27%20dy=%27.3em%27%20font-weight=%27bold%27%20font-family=%27system-ui%27%3E?%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%22},{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20512%20512%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27grad%27%20x1=%270%25%27%20y1=%270%25%27%20x2=%27100%25%27%20y2=%27100%25%27%3E%3Cstop%20offset=%270%25%27%20style=%27stop-color:%230e7490;stop-opacity:1%27%20/%3E%3Cstop%20offset=%2750%25%27%20style=%27stop-color:%236d28d9;stop-opacity:1%27%20/%3E%3Cstop%20offset=%27100%25%27%20style=%27stop-color:%23be185d;stop-opacity:1%27%20/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20fill=%27url(%23grad)%27%20width=%27512%27%20height=%27512%27/%3E%3Ctext%20x=%2750%25%27%20y=%2750%25%27%20font-size=%27200%27%20fill=%27white%27%20text-anchor=%27middle%27%20dy=%27.3em%27%20font-weight=%27bold%27%20font-family=%27system-ui%27%3E?%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22}],%22categories%22:[%22entertainment%22,%22games%22]}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236d28d9' width='100' height='100'/><text x='50' y='70' font-size='80' fill='white' text-anchor='middle' font-weight='bold'>?</text></svg>">
+    <link rel="manifest" href="manifest.json">
     
     <!-- Load Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -43,9 +44,8 @@
 
     <div id="root"></div>
 
-    <!-- Script Block marked as type="text/babel" so Babel standalone compiles it directly in-browser -->
     <script type="text/babel">
-        // Mocking Lucide icons manually with inline SVGs to ensure the file works with zero external build dependencies
+        // Icons
         function Plus({ size = 16, className = "" }) {
             return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="M12 5v14"/></svg>;
         }
@@ -63,9 +63,6 @@
         }
         function Zap({ size = 16, className = "" }) {
             return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m13 2-2 10h9L9 22l2-10H2Z"/></svg>;
-        }
-        function Check({ size = 16, className = "" }) {
-            return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 6 9 17l-5-5"/></svg>;
         }
         function Shuffle({ size = 16, className = "" }) {
             return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.2 0 2.3.6 3 1.7l1.1 1.6"/><path d="m15.4 12.8 1.2 1.7c.8 1.1 2 1.7 3.2 1.7H22"/><path d="m18 14 4 4-4 4"/></svg>;
@@ -232,7 +229,7 @@
                   <p className="text-zinc-400 font-display uppercase tracking-widest text-sm">The Ultimate Party Game</p>
                 </div>
 
-                <div className="glass-strong rounded-2xl p-6 mb-6 w-full max-w-md border-zinc-700">
+                <div className="glass-strong rounded-2xl p-6 mb-6 w-full max-w-md border-zinc-700" style={{background: 'rgba(24,24,27,0.5)', backdropFilter: 'blur(10px)'}}>
                   <h2 className="font-display text-lg font-bold mb-4 uppercase tracking-widest">Add Players</h2>
                   <div className="flex gap-2 mb-4">
                     <input
@@ -253,7 +250,7 @@
 
                   <div className="space-y-2 mb-6 max-h-48 overflow-y-auto">
                     {players.map((player, index) => (
-                      <div key={index} className="flex items-center justify-between glass rounded-lg px-3 py-2 border-zinc-800">
+                      <div key={index} className="flex items-center justify-between rounded-lg px-3 py-2 border-zinc-800 bg-zinc-900/50 border">
                         <span className="text-zinc-200 font-medium">{player}</span>
                         <button
                           onClick={() => handleRemovePlayer(index)}
@@ -275,7 +272,7 @@
                           className={`w-full py-2 px-3 rounded-lg font-medium text-sm uppercase tracking-widest transition-all ${
                             selectedCategory === cat
                               ? "bg-gradient-to-r from-cyan-500 to-violet-600 text-white"
-                              : "glass border-zinc-800 text-zinc-400 active:scale-95"
+                              : "bg-zinc-900/50 border-zinc-800 text-zinc-400 active:scale-95 border"
                           }`}
                         >
                           {cat}
@@ -305,12 +302,12 @@
             const asker = players[currentPlayerIndex];
             return (
               <div className="flex flex-col items-center justify-center min-h-screen px-6 py-8">
-                <div className="glass rounded-xl px-4 py-2 mb-6 self-start flex items-center gap-2 text-xs text-violet-400 border-zinc-800 font-semibold uppercase tracking-widest">
+                <div className="rounded-xl px-4 py-2 mb-6 self-start flex items-center gap-2 text-xs text-violet-400 font-semibold uppercase tracking-widest bg-zinc-900/50 border border-zinc-800">
                   <Eye size={11} /> Only you, {asker}
                 </div>
                 <div className="mb-5">
                   <p className="text-zinc-500 text-xs uppercase tracking-widest mb-1 font-semibold">Your secret question</p>
-                  <div className="glass-strong rounded-2xl p-5 relative overflow-hidden border-zinc-700">
+                  <div className="rounded-2xl p-5 relative overflow-hidden border-zinc-700 bg-zinc-900/50 border">
                     {!revealed && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a0c]/95 backdrop-blur-md rounded-2xl z-10 cursor-pointer" onClick={() => setRevealed(true)}>
                         <EyeOff size={28} className="text-zinc-600 mb-2" />
@@ -320,12 +317,12 @@
                     <p className="font-display text-xl font-bold leading-snug text-zinc-100">{question}</p>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {others.map((p) => (
-                        <span key={p} className="glass text-xs px-2.5 py-1 rounded-full text-fuchsia-400 border-zinc-800 font-medium">{p}</span>
+                        <span key={p} className="text-xs px-2.5 py-1 rounded-full text-fuchsia-400 border-zinc-800 font-medium bg-zinc-900/50 border">{p}</span>
                       ))}
                     </div>
                   </div>
                 </div>
-                <div className="glass rounded-2xl p-4 mb-6 border-zinc-800">
+                <div className="rounded-2xl p-4 mb-6 border-zinc-800 bg-zinc-900/50 border">
                   <h3 className="font-display text-sm font-bold uppercase tracking-widest text-zinc-500 mb-3">How to play</h3>
                   <div className="space-y-2.5">
                     {[["1","Read the question above silently."],["2","Answer OUT LOUD to everyone — say a player's name."],["3","Flip the coin to decide if the question gets revealed."]].map(([n,text]) => (
@@ -368,13 +365,13 @@
                   {isHeads ? "Question Revealed!" : "Forever a Secret"}
                 </div>
                 {isHeads ? (
-                  <div className="glass-strong rounded-2xl p-5 mb-4 w-full text-left border-zinc-700">
+                  <div className="rounded-2xl p-5 mb-4 w-full text-left border-zinc-700 bg-zinc-900/50 border">
                     <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-2">The question was…</p>
                     <p className="font-display text-lg font-bold leading-snug text-zinc-100">{question}</p>
                     <p className="text-zinc-500 text-sm mt-3">Now everyone knows exactly why <strong className="text-zinc-400">{players[currentPlayerIndex]}</strong> said what they said!</p>
                   </div>
                 ) : (
-                  <div className="glass rounded-2xl p-5 mb-4 w-full border-zinc-800">
+                  <div className="rounded-2xl p-5 mb-4 w-full border-zinc-800 bg-zinc-900/50 border">
                     <p className="font-display text-base font-bold text-zinc-600 italic mb-1">"What did they mean…?"</p>
                     <p className="text-zinc-600 text-sm"><strong className="text-zinc-500">{players[currentPlayerIndex]}</strong> takes the secret to the grave. Stay paranoid.</p>
                   </div>
@@ -400,8 +397,8 @@
     <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(err => {
-          console.log('Service Worker registration failed:', err);
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+          console.log('Service Worker not available:', err);
         });
       }
     </script>
