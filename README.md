@@ -4,7 +4,7 @@
 
 Welcome to **Paranoia**, a clean, dark-themed web game designed to turn your next hangout into a hilarious web of secrets. The rules are simple: you get a secret question, you name someone in the room out loud, and a coin flip decides if everyone finds out *why* you chose them. 
 
-👉 **[Click here to play the live game!](https://your-live-demo-link.com)**
+👉 **[Click here to play the live game!]((https://paranoia-game-release.vercel.app/))**
 
 ---
 
