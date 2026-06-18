@@ -3,6 +3,8 @@
   <link href="images/a20266eab_logo.png" rel="icon" type="image/svg+xml">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <link href="/manifest.json" rel="manifest">
+  <!-- PWA Theme Color -->
+  <meta name="theme-color" content="#000000">
   <title>
    Paranoia
   </title>
@@ -26,6 +28,17 @@
   </script>
   <script data-seo-source="builder" type="application/ld+json">
    {"name": "Paranoia", "logo": "images/a20266eab_logo.png", "@context": "https://schema.org", "@type": "Organization"}
+  </script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('Service Worker registered successfully!', reg))
+          .catch(err => console.log('Service Worker registration failed:', err));
+      });
+    }
   </script>
  </head>
  <body>
